@@ -1,21 +1,23 @@
 import * as items from "./items";
 
-export const onRightArrow = (state: AppState): ActionResult => {
+type ActionHandler = (state: AppState) => ActionResult;
+
+const onRightArrow: ActionHandler = (state) => {
   return noop(state);
 };
 
-export const onLeftArrow = (state: AppState): ActionResult => {
+const onLeftArrow: ActionHandler = (state) => {
   return noop(state);
 };
 
-export const onDownArrow = (state: AppState): ActionResult => {
+const onDownArrow: ActionHandler = (state) => {
   const prevItem = items.getNextBelow(state.items, state.selectedItem);
   if (prevItem && prevItem != state.selectedItem)
     return selectItem(state, prevItem);
   else return noop(state);
 };
 
-export const onUpArrow = (state: AppState): ActionResult => {
+const onUpArrow: ActionHandler = (state) => {
   const nextItem = items.getItemAbove(state.items, state.selectedItem);
   if (nextItem && nextItem != state.selectedItem)
     return selectItem(state, nextItem);
@@ -37,3 +39,10 @@ const noop = (state: AppState): ActionResult => ({
   nextState: state,
   commands: {},
 });
+
+export default {
+  onRightArrow,
+  onLeftArrow,
+  onDownArrow,
+  onUpArrow,
+};

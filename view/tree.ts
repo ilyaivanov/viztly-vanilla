@@ -1,16 +1,10 @@
 import { dom } from "../browser";
-import { store } from "../domain";
-import * as items from "../domain/items";
+import { store, items } from "../domain";
 
 const viewItem = (item: Item) => {
   const { children, id, title } = item;
   const appendItems = () => {
-    if (children)
-      elem.appendChild(
-        dom.ul({
-          children: items.mapChildrenIfOpen(store.state.items, id, viewItem),
-        })
-      );
+    if (children) elem.appendChild(renderTree(id));
   };
 
   const commands: ItemCommands = {

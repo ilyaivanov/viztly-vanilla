@@ -1,5 +1,7 @@
-import { Store } from "./store";
+import { ActionsDispatcher, Store } from "./infra/store";
 
-export const store = new Store();
+export * as items from "./items";
+export const store = new Store() as Store & ActionsDispatcher;
+
 //@ts-expect-error
 global.store = store;

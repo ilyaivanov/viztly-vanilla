@@ -1,4 +1,4 @@
-import * as actions from "./actions";
+import actions from "./actions";
 
 describe("having two items", () => {
   const getState = (): AppState => ({

@@ -17,7 +17,7 @@ export const initial: Items = {
   },
   "1.2": {
     id: "1.2",
-    title: "First.1",
+    title: "First.2",
   },
   "1.3": {
     id: "1.3",
@@ -119,9 +119,20 @@ export const mapChildrenIfOpen = <T>(
   } else return [];
 };
 
-//helpers
+export const getChildren = (items: Items, id: string): string[] =>
+  items[id].children || [];
 
-const getParentId = (items: Items, id: string): string => {
+export const assignItem = (
+  items: Items,
+  id: string,
+  mapper: (item: Item) => Partial<Item>
+): Items => {
+  const item = items[id];
+  Object.assign(item, mapper(item));
+  return items;
+};
+
+export const getParentId = (items: Items, id: string): string => {
   const i = Object.keys(items).find((key) => {
     const item = items[key];
     return item.children && item.children.indexOf(id) >= 0;
@@ -130,14 +141,14 @@ const getParentId = (items: Items, id: string): string => {
   return i!;
 };
 
+const roots = new Set(["HOME", "SEARCH"]);
+export const isRoot = (id: string) => roots.has(id);
+
+//helpers
+
 const getContext = (items: Items, id: string): string[] => {
   const parentId = getParentId(items, id);
   return items[parentId].children || [];
-};
-
-const getParent = (items: Items, id: string): Item | undefined => {
-  const parentId = getParentId(items, id);
-  if (parentId) return items[parentId];
 };
 
 const getFollowingItem = (items: Items, id: string): string | undefined => {
@@ -160,9 +171,3 @@ const getLastNestedItem = (items: Items, id: string): string => {
   }
   return id;
 };
-
-const getChildren = (items: Items, id: string): string[] =>
-  items[id].children || [];
-
-const roots = new Set(["HOME", "SEARCH"]);
-const isRoot = (id: string) => roots.has(id);

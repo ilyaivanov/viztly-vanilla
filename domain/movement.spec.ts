@@ -1,4 +1,5 @@
 import actions from "./actions";
+import * as items from "./items";
 import { buildItems } from "./itemsBuilder";
 
 it("having two items with first selected going down selects second item", () => {
@@ -102,4 +103,76 @@ it("going up when selects the most nested items if previous item is open", () =>
     selectedItem: "2",
   };
   expect(actions.onUpArrow(state).nextState.selectedItem).toBe("1.1.1");
+});
+
+describe("having selected an open folder", () => {
+  const state = (): AppState => ({
+    items: buildItems(`
+        HOME
+          1 -open
+            1.1 -open
+              1.1.1
+          2
+      `),
+    selectedItem: "1.1",
+  });
+  it("on arrow left closes that folder", () => {
+    const { nextState } = actions.onLeftArrow(state());
+    expect(items.isOpen(nextState.items, "1.1")).toBe(false);
+  });
+
+  it("on arrow right selects first child", () => {
+    const { nextState } = actions.onRightArrow(state());
+    expect(nextState.selectedItem).toBe("1.1.1");
+  });
+});
+
+describe("having selected a closed folder", () => {
+  const state = (): AppState => ({
+    items: buildItems(`
+        HOME
+          1 -open
+            1.1
+              1.1.1
+          2
+      `),
+    selectedItem: "1.1",
+  });
+  it("on arrow left selects parent", () => {
+    const { nextState } = actions.onLeftArrow(state());
+    expect(nextState.selectedItem).toBe("1");
+  });
+
+  it("on arrow right opens folder", () => {
+    const { nextState } = actions.onRightArrow(state());
+    expect(items.isOpen(nextState.items, "1.1")).toBe(true);
+  });
+});
+
+it("having two items with first selected going left does nothing", () => {
+  const state: AppState = {
+    items: buildItems(`
+        HOME
+          1
+          2
+      `),
+    selectedItem: "1",
+  };
+  const { nextState, commands } = actions.onLeftArrow(state);
+  expect(nextState).toEqual(state);
+  expect(commands).toEqual({});
+});
+
+it("having an open empty folder going right does nothing", () => {
+  const state: AppState = {
+    items: buildItems(`
+        HOME
+          1 -open
+          2
+      `),
+    selectedItem: "1",
+  };
+  const { nextState, commands } = actions.onRightArrow(state);
+  expect(nextState).toEqual(state);
+  expect(commands).toEqual({});
 });

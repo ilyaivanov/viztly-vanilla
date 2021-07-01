@@ -6,6 +6,6 @@ document.body.append(renderTree());
 document.addEventListener("keydown", (e) => {
   if (e.code === "ArrowDown") store.onDownArrow();
   if (e.code === "ArrowUp") store.onUpArrow();
-  // if (e.code === "ArrowRight") store.startLoadingSelectedItem();
-  // if (e.code === "ArrowLeft") store.closeSelected();
+  if (e.code === "ArrowRight") store.onRightArrow();
+  if (e.code === "ArrowLeft") store.onLeftArrow();
 });

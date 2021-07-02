@@ -13,6 +13,8 @@ const onRightArrow: ActionHandler = (state) => {
     state.selectedItem
   );
 
+  const isLoading = items.isLoading(state.items, state.selectedItem);
+
   if (isNeededToBeLoaded) {
     return merge(
       open(state, state.selectedItem),
@@ -23,7 +25,7 @@ const onRightArrow: ActionHandler = (state) => {
       state,
       items.getChildren(state.items, state.selectedItem)[0]
     );
-  else if (!isEmpty) return open(state, state.selectedItem);
+  else if (!isEmpty || isLoading) return open(state, state.selectedItem);
   else return noop(state);
 };
 

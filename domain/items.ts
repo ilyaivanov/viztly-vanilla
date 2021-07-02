@@ -81,7 +81,7 @@ export const isLoading = (items: Items, id: string): boolean =>
   !!items[id].isLoading;
 
 export const isNeededToBeLoaded = (items: Items, id: string): boolean =>
-  !items[id].isOpen && !items[id].children;
+  !items[id].isOpen && !items[id].children && !items[id].isLoading;
 
 export const mapChildrenIfOpen = <T>(
   items: Items,

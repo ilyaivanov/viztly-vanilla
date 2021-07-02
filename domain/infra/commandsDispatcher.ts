@@ -1,5 +1,5 @@
 export class CommandsDispatcher {
-  views = new Map<Element, CommandListener>();
+  views = new WeakMap<Element, CommandListener>();
 
   registerView = (element: Element, listener: CommandListener) =>
     this.views.set(element, listener);

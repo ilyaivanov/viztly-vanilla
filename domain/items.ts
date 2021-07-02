@@ -1,51 +1,22 @@
-export const initial: Items = {
-  HOME: {
-    id: "HOME",
-    title: "HOME",
-    isOpen: true,
-    children: ["1", "2", "3", "4", "5"],
-  },
-  "1": {
-    id: "1",
-    title: "First",
-    children: ["1.1", "1.2", "1.3"],
-    isOpen: true,
-  },
-  "1.1": {
-    id: "1.1",
-    title: "First.1",
-  },
-  "1.2": {
-    id: "1.2",
-    title: "First.2",
-  },
-  "1.3": {
-    id: "1.3",
-    title: "First.3",
-    children: ["1.3.1"],
-    isOpen: true,
-  },
-  "1.3.1": {
-    id: "1.3.1",
-    title: "First.3.1",
-  },
-  "2": {
-    id: "2",
-    title: "Second",
-  },
-  "3": {
-    id: "3",
-    title: "Third",
-  },
-  "4": {
-    id: "4",
-    title: "Four",
-  },
-  "5": {
-    id: "5",
-    title: "Five",
-  },
-};
+import { buildItems } from "./itemsBuilder";
+
+export const initial: Items = buildItems(`
+  HOME
+    First -open
+      Child_1
+      Child_2
+      Child_3 -open
+        Subchild_1
+        Subchild_2
+    Second
+    Third
+    Fourth
+    Fifth
+    Six_(closed)
+      Six_one
+      Six_two
+
+`);
 
 export const getRootItems = (items: Items): Item[] => {
   const children = items["HOME"].children;
@@ -106,6 +77,11 @@ export const getItemAbove = (items: Items, id: string): string | undefined => {
 };
 
 export const isOpen = (items: Items, id: string): boolean => !!items[id].isOpen;
+export const isLoading = (items: Items, id: string): boolean =>
+  !!items[id].isLoading;
+
+export const isNeededToBeLoaded = (items: Items, id: string): boolean =>
+  !items[id].isOpen && !items[id].children;
 
 export const mapChildrenIfOpen = <T>(
   items: Items,
@@ -129,6 +105,18 @@ export const assignItem = (
 ): Items => {
   const item = items[id];
   Object.assign(item, mapper(item));
+  return items;
+};
+
+export const itemLoaded = (
+  items: Items,
+  id: string,
+  children: Item[]
+): Items => {
+  const item = items[id];
+  delete item.isLoading;
+  item.children = children.map((c) => c.id);
+  children.forEach((child) => (items[child.id] = child));
   return items;
 };
 

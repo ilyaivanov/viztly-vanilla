@@ -9,6 +9,7 @@ type ItemCommand =
 type ItemCommands = Record<ItemCommand, () => void>;
 
 type Command = ItemCommand;
+
 type CommandListener = Partial<Record<Command, () => void>>;
 
 type ActionResult = {
@@ -32,5 +33,6 @@ type Item = {
   id: string;
   title: string;
   isOpen?: boolean;
+  isLoading?: boolean;
   children?: string[];
 };

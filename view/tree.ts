@@ -1,31 +1,40 @@
+import { loadPlaylistItems } from "../api/youtube";
 import { dom } from "../browser";
 import { store, items } from "../domain";
+import actions from "../domain/actions";
 
 const viewItem = (item: Item) => {
   const { children, id, title } = item;
-  const appendItems = () => {
-    if (children) elem.appendChild(renderTree(id));
+  const appendItems = () => elem.appendChild(renderTree(id));
+
+  const assignLoadingState = () => {
+    titleElem.textContent = title + " (loading...)";
   };
 
   const commands: ItemCommands = {
     select: () => (titleElem.style.fontWeight = "bold"),
     unselect: () => titleElem.style.removeProperty("font-weight"),
-    startLoading: () => (titleElem.textContent = title + " (loading...)"),
+    startLoading: () => {
+      assignLoadingState();
+      loadPlaylistItems().then((itemChildren) =>
+        store.apply(actions.itemsLoaded(store.state, item.id, itemChildren))
+      );
+    },
     stopLoading() {
       titleElem.textContent = title;
-      appendItems();
+      if (items.isOpen(store.state.items, item.id)) appendItems();
     },
     close: () => dom.setChildren(elem, [titleElem]),
     open: appendItems,
   };
 
   const titleElem = dom.span({ text: title });
-  const elem = dom.li({
-    children: [titleElem].concat(renderTree(id)),
-    id: id,
-  });
+  const elem = dom.li({ children: [titleElem], id: id });
 
   if (id == store.state.selectedItem) commands.select();
+  if (items.isLoading(store.state.items, id)) assignLoadingState();
+  if (items.isOpen(store.state.items, id)) appendItems();
+
   store.registerView(elem, commands);
   return elem;
 };

@@ -9,7 +9,7 @@ export class Store {
   registerView = this.commandsDispatcher.registerView;
 
   state: AppState = {
-    selectedItem: "1",
+    selectedItem: items.initial["HOME"].children![0],
     items: items.initial,
   };
 
@@ -20,7 +20,7 @@ export class Store {
     });
   }
 
-  private apply = (actionResult: ActionResult) => {
+  apply = (actionResult: ActionResult) => {
     this.state = actionResult.nextState;
     Object.entries(actionResult.commands).forEach(([command, elementId]) =>
       this.commandsDispatcher.sendCommand(elementId, command as Command)

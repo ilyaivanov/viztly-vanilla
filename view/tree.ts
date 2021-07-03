@@ -5,7 +5,7 @@ import actions from "../domain/actions";
 
 const viewItem = (item: Item) => {
   const { id, title } = item;
-  let childrenContainer: HTMLElement;
+  let childrenContainer: HTMLElement | undefined;
   const viewChildren = () => {
     const res = document.createElement("div");
     res.style.overflow = "hidden";
@@ -26,32 +26,45 @@ const viewItem = (item: Item) => {
     stopLoading() {
       if (items.isOpen(store.state.items, item.id)) {
         const newContent = viewChildren();
-        anim.crossFade(
-          childrenContainer,
-          childrenContainer.firstChild as HTMLElement,
-          newContent
-        );
+        if (childrenContainer)
+          anim.crossFade(
+            childrenContainer,
+            childrenContainer.firstChild as HTMLElement,
+            newContent
+          );
       }
     },
-    close: () =>
-      anim
-        .collapse(childrenContainer)
-        .addEventListener("finish", () => childrenContainer.remove()),
-    open: () => {
-      childrenContainer = viewChildren();
-      elem.appendChild(childrenContainer);
-      anim.expand(childrenContainer);
+    close: () => {
+      if (childrenContainer && anim.hasAnimations(childrenContainer))
+        anim.revertAnimations(childrenContainer);
+      else if (childrenContainer)
+        anim
+          .collapse(childrenContainer)
+          .addEventListener("finish", onChildrenAnimationDone);
     },
+    open: () => {
+      if (childrenContainer && anim.hasAnimations(childrenContainer))
+        anim.revertAnimations(childrenContainer);
+      else {
+        childrenContainer = viewChildren();
+        elem.appendChild(childrenContainer);
+        anim
+          .expand(childrenContainer)
+          .addEventListener("finish", onChildrenAnimationDone);
+      }
+    },
+  };
+
+  const onChildrenAnimationDone = () => {
+    if (childrenContainer && !items.isOpen(store.state.items, item.id)) {
+      childrenContainer.remove();
+      childrenContainer = undefined;
+    }
   };
 
   const titleElem = dom.span({ text: title });
   const elem = dom.li({ children: [titleElem], id: id });
 
-  if (
-    id == store.state.mainSelectedItem ||
-    id == store.state.searchSelectedItem
-  )
-    commands.select();
   if (items.isOpen(store.state.items, id)) {
     childrenContainer = viewChildren();
     elem.appendChild(childrenContainer);

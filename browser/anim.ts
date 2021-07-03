@@ -1,4 +1,9 @@
-const animationSpeedCoefficient = 1;
+const animationSpeedCoefficient = 4;
+
+const animationTimings = {
+  expandCollapse: 200,
+};
+
 export const crossFade = (
   container: HTMLElement,
   content: HTMLElement,
@@ -11,14 +16,16 @@ export const crossFade = (
 
   content
     .animate([{ opacity: 1 }, { opacity: 0 }], {
-      duration: 100 * animationSpeedCoefficient,
+      duration:
+        (animationTimings.expandCollapse / 2) * animationSpeedCoefficient,
     })
     .addEventListener("finish", () => {
       content.remove();
       newContent.style.removeProperty("height");
       newContent.style.removeProperty("opacity");
       newContent.animate([{ opacity: 0 }, { opacity: 1 }], {
-        duration: 100 * animationSpeedCoefficient,
+        duration:
+          (animationTimings.expandCollapse / 2) * animationSpeedCoefficient,
       });
     });
   container
@@ -27,7 +34,7 @@ export const crossFade = (
         { height: `${currentHeight}px` },
         { height: `${newContent.scrollHeight}px` },
       ],
-      { duration: 200 * animationSpeedCoefficient }
+      { duration: animationTimings.expandCollapse * animationSpeedCoefficient }
     )
     .addEventListener("finish", () => {});
 };
@@ -38,7 +45,7 @@ export const collapse = (container: HTMLElement): Animation => {
   return container.animate(
     [{ height: `${currentHeight}px` }, { height: `0px` }],
     {
-      duration: 200 * animationSpeedCoefficient,
+      duration: animationTimings.expandCollapse * animationSpeedCoefficient,
     }
   );
 };
@@ -48,7 +55,13 @@ export const expand = (container: HTMLElement): Animation => {
   return container.animate(
     [{ height: `0px` }, { height: `${currentHeight}px` }],
     {
-      duration: 200 * animationSpeedCoefficient,
+      duration: animationTimings.expandCollapse * animationSpeedCoefficient,
     }
   );
 };
+
+export const revertAnimations = (elem: HTMLElement) =>
+  elem.getAnimations().forEach((animation) => animation.reverse());
+
+export const hasAnimations = (elem: HTMLElement) =>
+  elem.getAnimations().length > 0;

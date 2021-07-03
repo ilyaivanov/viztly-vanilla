@@ -2,8 +2,8 @@ import { dom, style } from "./browser";
 import { actions } from "./domain";
 import { renderTree } from "./view/tree";
 
-const renderApp = () => {
-  const app = dom.div({
+const renderApp = () =>
+  dom.div({
     className: "app",
     children: [
       dom.div({
@@ -16,11 +16,16 @@ const renderApp = () => {
       }),
     ],
   });
-  return app;
-};
+
 document.body.append(renderApp());
 
+//trigger selection on main tab
+actions.focusOn("main");
+
 document.addEventListener("keydown", (e) => {
+  //preventing scroll movement
+  if (e.code.startsWith("Arrow")) e.preventDefault();
+
   if (e.code === "ArrowDown") actions.onArrowDown();
   if (e.code === "ArrowUp") actions.onArrowUp();
   if (e.code === "ArrowRight") actions.onArrowRight();

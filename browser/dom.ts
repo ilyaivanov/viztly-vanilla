@@ -6,6 +6,21 @@ export const setChildren = (elem: Element, children: Element[]) => {
   children.forEach((child) => elem.appendChild(child));
 };
 
+type ClassMap = Record<ClassName, boolean>;
+
+export const assignClasses = (elem: Element, map: ClassMap) => {
+  Object.entries(map).map(([className, isSet]) => {
+    if (isSet) elem.classList.add(className);
+    else elem.classList.remove(className);
+  });
+};
+
+export const addClass = (elem: Element, className: ClassName) =>
+  elem.classList.add(className);
+
+export const removeClass = (elem: Element, className: ClassName) =>
+  elem.classList.remove(className);
+
 export const ul = ({ children }: { children: Element[] }) => {
   const elem = document.createElement("ul");
   appendChildren(elem, children);
@@ -15,6 +30,19 @@ export const ul = ({ children }: { children: Element[] }) => {
 export const ol = ({ children }: { children: Element[] }) => {
   const elem = document.createElement("ol");
   appendChildren(elem, children);
+  return elem;
+};
+
+type DivProps = {
+  className?: ClassName;
+  children?: Element[];
+};
+
+export const div = ({ className, children }: DivProps) => {
+  const elem = document.createElement("div");
+
+  if (className) elem.classList.add(className);
+  if (children) appendChildren(elem, children);
   return elem;
 };
 

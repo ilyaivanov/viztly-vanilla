@@ -1,16 +1,13 @@
-import actions from "./actions";
-import * as items from "./items";
-import { buildItems } from "./itemsBuilder";
+import actions from "../actions";
+import * as items from "../items";
+import { buildState } from "./itemsBuilder";
 
 it("having an empty folder which needs to be loaded when moving right dispatches a loading command", () => {
-  const state: AppState = {
-    items: buildItems(`
-          HOME
-            1
-            2
-        `),
-    selectedItem: "1",
-  };
+  const state: AppState = buildState(`
+      HOME
+        1 -mainSelected
+        2
+    `);
   const { nextState, commands } = actions.onRightArrow(state);
   expect(items.isOpen(nextState.items, "1")).toEqual(true);
   expect(items.isLoading(nextState.items, "1")).toEqual(true);
@@ -18,28 +15,25 @@ it("having an empty folder which needs to be loaded when moving right dispatches
 });
 
 it("when items loaded for an item they are assigned as children ", () => {
-  const state: AppState = {
-    items: buildItems(`
-            HOME
-              1
-              2
-          `),
-    selectedItem: "1",
-  };
-  const expectedState: AppState = {
-    items: buildItems(`
-            HOME
-              1
-                1.1
-                1.2
-              2
-          `),
-    selectedItem: "1",
-  };
+  const state: AppState = buildState(`
+    HOME
+      1 -mainSelected
+      2
+  `);
+
+  const expectedState: AppState = buildState(`
+    HOME
+      1 -mainSelected
+        1.1
+        1.2
+      2
+  `);
+
   const { nextState, commands } = actions.itemsLoaded(state, "1", [
     folder("1.1"),
     folder("1.2"),
   ]);
+
   expectEqual(nextState, expectedState);
   expect(items.isLoading(nextState.items, "1")).toEqual(false);
   expectEqual(commands, { stopLoading: "1" });

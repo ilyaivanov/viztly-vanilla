@@ -27,7 +27,7 @@ export const crossFade = (
         { height: `${currentHeight}px` },
         { height: `${newContent.scrollHeight}px` },
       ],
-      { duration: 200 * animationSpeedCoefficient, fill: "forwards" }
+      { duration: 200 * animationSpeedCoefficient }
     )
     .addEventListener("finish", () => {});
 };
@@ -39,7 +39,6 @@ export const collapse = (container: HTMLElement): Animation => {
     [{ height: `${currentHeight}px` }, { height: `0px` }],
     {
       duration: 200 * animationSpeedCoefficient,
-      fill: "forwards",
     }
   );
 };
@@ -50,7 +49,6 @@ export const expand = (container: HTMLElement): Animation => {
     [{ height: `0px` }, { height: `${currentHeight}px` }],
     {
       duration: 200 * animationSpeedCoefficient,
-      fill: "forwards",
     }
   );
 };

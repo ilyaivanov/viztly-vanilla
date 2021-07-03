@@ -1,5 +1,5 @@
 import { loadPlaylistItems } from "../api/youtube";
-import { dom, anim } from "../browser";
+import { dom, anim, style } from "../browser";
 import { store, items } from "../domain";
 import actions from "../domain/actions";
 
@@ -16,8 +16,8 @@ const viewItem = (item: Item) => {
   };
 
   const commands: ItemCommands = {
-    select: () => (titleElem.style.fontWeight = "bold"),
-    unselect: () => titleElem.style.removeProperty("font-weight"),
+    select: () => dom.addClass(titleElem, "item-title_selected"),
+    unselect: () => dom.removeClass(titleElem, "item-title_selected"),
     startLoading: () => {
       loadPlaylistItems().then((itemChildren) =>
         store.apply(actions.itemsLoaded(store.state, item.id, itemChildren))
@@ -47,7 +47,11 @@ const viewItem = (item: Item) => {
   const titleElem = dom.span({ text: title });
   const elem = dom.li({ children: [titleElem], id: id });
 
-  if (id == store.state.selectedItem) commands.select();
+  if (
+    id == store.state.mainSelectedItem ||
+    id == store.state.searchSelectedItem
+  )
+    commands.select();
   if (items.isOpen(store.state.items, id)) {
     childrenContainer = viewChildren();
     elem.appendChild(childrenContainer);
@@ -64,3 +68,8 @@ export const renderTree = (id?: string) => {
 
   return dom.ul({ children });
 };
+
+style.class("item-title_selected", {
+  color: "#9CDCFE",
+  fontWeight: "bold",
+});

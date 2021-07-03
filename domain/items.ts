@@ -1,23 +1,3 @@
-import { buildItems } from "./itemsBuilder";
-
-export const initial: Items = buildItems(`
-  HOME
-    First -open
-      Child_1
-      Child_2
-      Child_3 -open
-        Subchild_1
-        Subchild_2
-    Second
-    Third
-    Fourth
-    Fifth
-    Six_(closed)
-      Six_one
-      Six_two
-
-`);
-
 export const getRootItems = (items: Items): Item[] => {
   const children = items["HOME"].children;
   if (children) return children.map((id) => items[id]);

@@ -1,24 +1,34 @@
 import { CommandsDispatcher } from "./commandsDispatcher";
-import * as items from "../items";
-import actions from "../actions";
-
-export type ActionsDispatcher = Record<keyof typeof actions, () => void>;
+import { buildState } from "../specs/itemsBuilder";
 
 export class Store {
   private commandsDispatcher = new CommandsDispatcher();
   registerView = this.commandsDispatcher.registerView;
 
-  state: AppState = {
-    selectedItem: items.initial["HOME"].children![0],
-    items: items.initial,
-  };
-
-  constructor() {
-    Object.keys(actions).forEach((actionName) => {
-      //@ts-expect-error
-      this[actionName] = () => this.apply(actions[actionName](this.state));
-    });
-  }
+  state: AppState = buildState(`
+    HOME
+      First -open -mainSelected
+        Child_1
+        Child_2
+        Child_3 -open
+          Subchild_1
+          Subchild_2
+      Second
+      Third
+      Fourth
+      Fifth
+      Six_(closed)
+        Six_one
+        Six_two
+    SEARCH
+      search1 -searchSelected
+        search_sub1
+        search_sub2
+        search_sub3
+        search_sub4
+      search2
+      search3
+  `);
 
   apply = (actionResult: ActionResult) => {
     this.state = actionResult.nextState;

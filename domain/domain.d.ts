@@ -24,8 +24,19 @@ type ElementId = string;
 type AppState = {
   items: Items;
 
-  selectedItem: string;
+  mainSelectedItem: string;
+  searchSelectedItem: string;
+
+  uiState: UIState;
 };
+
+type UIState = {
+  isSearchVisible: boolean;
+  isSearchLoading: boolean;
+  areaFocused: FocusArea;
+};
+
+type FocusArea = "main" | "search" | "serch-input";
 
 type Items = Record<string, Item>;
 

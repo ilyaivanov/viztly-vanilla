@@ -1,4 +1,4 @@
-const animationSpeedCoefficient = 4;
+const animationSpeedCoefficient = 1;
 
 const animationTimings = {
   expandCollapse: 200,

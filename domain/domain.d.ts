@@ -6,12 +6,62 @@ type ItemCommand =
   | "open"
   | "close";
 
+type UiCommand = "focus-search-input" | "blur-search-input";
+
 type ItemCommands = Record<ItemCommand, () => void>;
 
-type Command = ItemCommand;
+type SearchCommand = "focus" | "unfocus" | "start-loading" | "stop-loading";
+
+type SearchCommands = Record<SearchCommand, () => void>;
+
+type Command = ItemCommand | UiCommand | SearchCommand;
 
 type CommandListener = Partial<Record<Command, () => void>>;
 
+type CommandA = {
+  type: "select";
+  itemId: string;
+};
+
+type CommandB = {
+  type: "unselect";
+  itemLabel: number;
+};
+
+type CommandsAll = CommandA | CommandB;
+
+type ComandName = CommandsAll["type"];
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 type ActionResult = {
   nextState: AppState;
   commands: ActionResultCommands;

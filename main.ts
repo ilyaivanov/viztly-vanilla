@@ -1,5 +1,6 @@
 import { dom, style } from "./browser";
-import { actions } from "./domain";
+import { actions, store } from "./domain";
+import { renderSearchTab } from "./view/searchTab";
 import { renderTree } from "./view/tree";
 
 const renderApp = () =>
@@ -10,9 +11,10 @@ const renderApp = () =>
         className: "main-tab",
         children: [renderTree("HOME")],
       }),
+      renderSearchTab(),
       dom.div({
-        className: "search-tab",
-        children: [renderTree("SEARCH")],
+        className: "keyboard-label",
+        children: [dom.span({ text: "Keyboard Only" })],
       }),
     ],
   });
@@ -32,11 +34,17 @@ document.addEventListener("keydown", (e) => {
   if (e.code === "ArrowLeft") actions.onArrowLeft();
   if (e.key === "2" && e.ctrlKey) {
     e.preventDefault();
-    actions.focusOn("search");
+    if (!store.state.items["SEARCH"].children) actions.focusOn("serch-input");
+    else actions.focusOn("search");
   }
   if (e.key === "1" && e.ctrlKey) {
     e.preventDefault();
     actions.focusOn("main");
+  }
+
+  if (e.key === "k" && e.ctrlKey) {
+    e.preventDefault();
+    actions.focusOn("serch-input");
   }
 });
 
@@ -64,4 +72,11 @@ style.tag("body", { margin: 0 });
 
 style.tag("body", {
   fontFamily: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"`,
+});
+
+style.class("keyboard-label", {
+  position: "fixed",
+  bottom: 10,
+  color: "darkGrey",
+  left: "calc(50vw - 68px)",
 });

@@ -54,16 +54,32 @@ const onUpArrow: ActionHandler = (state) => {
 };
 
 const focusOn = (state: AppState, area: FocusArea): ActionResult => {
-  const commands =
-    area === "main"
-      ? {
-          select: state.mainSelectedItem,
-          unselect: state.searchSelectedItem,
-        }
-      : {
-          select: state.searchSelectedItem,
-          unselect: state.mainSelectedItem,
-        };
+  let commands: ActionResultCommands = {};
+
+  if (area === "main")
+    commands = {
+      select: state.mainSelectedItem,
+      unselect: state.searchSelectedItem,
+      unfocus: "search-tab",
+    };
+  else if (area == "search")
+    commands = {
+      select: state.searchSelectedItem,
+      unselect: state.mainSelectedItem,
+      unfocus: "search-tab",
+    };
+  else if (area === "serch-input") {
+    if (state.uiState.areaFocused == "main")
+      commands = {
+        unselect: state.mainSelectedItem,
+        focus: "search-tab",
+      };
+    else if (state.uiState.areaFocused == "search")
+      commands = {
+        unselect: state.searchSelectedItem,
+        focus: "search-tab",
+      };
+  }
   return {
     nextState: {
       ...state,
@@ -87,6 +103,34 @@ const itemsLoaded = (
   },
   commands: { stopLoading: itemId },
 });
+
+const searchForVideos = (state: AppState): ActionResult => {
+  return {
+    nextState: {
+      ...state,
+      items: items.assignItem(state.items, "SEARCH", () => ({
+        children: undefined,
+      })),
+      uiState: {
+        ...state.uiState,
+        isSearchLoading: true,
+      },
+    },
+    commands: { "start-loading": "search-tab" },
+  };
+};
+
+const searchResultsDone = (state: AppState, items: Item[]): ActionResult => {
+  // commands are ignored deliberately, I'm not showing SEARCH node
+  const { nextState } = itemsLoaded(state, "SEARCH", items);
+  return {
+    nextState: {
+      ...nextState,
+      searchSelectedItem: nextState.items["SEARCH"].children![0],
+    },
+    commands: { "stop-loading": "search-tab" },
+  };
+};
 
 const changeSelectionOnFocusedArea = (
   state: AppState,
@@ -167,4 +211,7 @@ export default {
   onUpArrow,
   itemsLoaded,
   focusOn,
+  searchForVideos,
+  searchResultsDone,
+  changeSelectionOnFocusedArea,
 };

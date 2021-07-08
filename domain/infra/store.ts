@@ -21,13 +21,6 @@ export class Store {
         Six_one
         Six_two
     SEARCH
-      search1 -searchSelected
-        search_sub1
-        search_sub2
-        search_sub3
-        search_sub4
-      search2
-      search3
   `);
 
   apply = (actionResult: ActionResult) => {

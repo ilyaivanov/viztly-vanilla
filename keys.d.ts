@@ -5,6 +5,7 @@ type ClassName =
   | "search-tab_hidden"
   | "search-tab-input"
   | "item-title"
+  | "item-done"
   | "item-title_selected"
   | "item-children"
   | "keyboard-label";

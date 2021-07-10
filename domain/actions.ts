@@ -54,30 +54,30 @@ const onUpArrow: ActionHandler = (state) => {
 };
 
 const focusOn = (state: AppState, area: FocusArea): ActionResult => {
-  let commands: ActionResultCommands = {};
+  let commands: ActionCommands = {};
 
   if (area === "main")
     commands = {
-      select: state.mainSelectedItem,
-      unselect: state.searchSelectedItem,
-      unfocus: "search-tab",
+      "item-select": state.mainSelectedItem,
+      "item-unselect": state.searchSelectedItem,
+      "search-input-focus": undefined,
     };
   else if (area == "search")
     commands = {
-      select: state.searchSelectedItem,
-      unselect: state.mainSelectedItem,
-      unfocus: "search-tab",
+      "item-select": state.searchSelectedItem,
+      "item-unselect": state.mainSelectedItem,
+      "search-input-focus": undefined,
     };
   else if (area === "serch-input") {
     if (state.uiState.areaFocused == "main")
       commands = {
-        unselect: state.mainSelectedItem,
-        focus: "search-tab",
+        "item-unselect": state.mainSelectedItem,
+        "search-input-focus": undefined,
       };
     else if (state.uiState.areaFocused == "search")
       commands = {
-        unselect: state.searchSelectedItem,
-        focus: "search-tab",
+        "item-unselect": state.searchSelectedItem,
+        "search-input-focus": undefined,
       };
   }
   return {
@@ -100,8 +100,12 @@ const itemsLoaded = (
   nextState: {
     ...state,
     items: items.itemLoaded(state.items, itemId, childs),
+    uiState: {
+      ...state.uiState,
+      isSearchLoading: false,
+    },
   },
-  commands: { stopLoading: itemId },
+  commands: { "item-loaded": itemId },
 });
 
 const searchForVideos = (state: AppState): ActionResult => {
@@ -116,7 +120,7 @@ const searchForVideos = (state: AppState): ActionResult => {
         isSearchLoading: true,
       },
     },
-    commands: { "start-loading": "search-tab" },
+    commands: { "search-loading": undefined },
   };
 };
 
@@ -128,7 +132,7 @@ const searchResultsDone = (state: AppState, items: Item[]): ActionResult => {
       ...nextState,
       searchSelectedItem: nextState.items["SEARCH"].children![0],
     },
-    commands: { "stop-loading": "search-tab" },
+    commands: { "search-loading": undefined },
   };
 };
 
@@ -148,8 +152,8 @@ const changeSelectionOnFocusedArea = (
   return {
     nextState,
     commands: {
-      select: itemId,
-      unselect: currentSelectedItem,
+      "item-select": itemId,
+      "item-unselect": currentSelectedItem,
     },
   };
 };
@@ -169,7 +173,7 @@ const startLoading = (state: AppState, itemId: string): ActionResult => ({
     ...state,
     items: items.assignItem(state.items, itemId, () => ({ isLoading: true })),
   },
-  commands: { startLoading: itemId },
+  commands: { "item-start-loading": itemId },
 });
 
 const close = (state: AppState, itemId: string): ActionResult => ({
@@ -177,7 +181,7 @@ const close = (state: AppState, itemId: string): ActionResult => ({
     ...state,
     items: items.assignItem(state.items, itemId, () => ({ isOpen: false })),
   },
-  commands: { close: itemId },
+  commands: { "item-close": itemId },
 });
 
 const open = (state: AppState, itemId: string): ActionResult => ({
@@ -185,7 +189,7 @@ const open = (state: AppState, itemId: string): ActionResult => ({
     ...state,
     items: items.assignItem(state.items, itemId, () => ({ isOpen: true })),
   },
-  commands: { open: itemId },
+  commands: { "item-open": itemId },
 });
 
 const noop = (state: AppState): ActionResult => ({

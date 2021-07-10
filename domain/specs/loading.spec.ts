@@ -11,7 +11,7 @@ it("having an empty folder which needs to be loaded when moving right dispatches
   const { nextState, commands } = actions.onRightArrow(state);
   expect(items.isOpen(nextState.items, "1")).toEqual(true);
   expect(items.isLoading(nextState.items, "1")).toEqual(true);
-  expectEqual(commands, { startLoading: "1", open: "1" });
+  expectEqual(commands, { "item-start-loading": "1", "item-open": "1" });
 });
 
 it("when items loaded for an item they are assigned as children ", () => {
@@ -36,7 +36,7 @@ it("when items loaded for an item they are assigned as children ", () => {
 
   expectEqual(nextState, expectedState);
   expect(items.isLoading(nextState.items, "1")).toEqual(false);
-  expectEqual(commands, { stopLoading: "1" });
+  expectEqual(commands, { "item-loaded": "1" });
 });
 
 const expectEqual = <T>(received: T, expected: T) =>

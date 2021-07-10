@@ -46,6 +46,9 @@ document.addEventListener("keydown", (e) => {
     e.preventDefault();
     actions.focusOn("serch-input");
   }
+  if (e.key === "b" && e.ctrlKey) {
+    console.log(store.getEventsCount());
+  }
 });
 
 style.class("app", {

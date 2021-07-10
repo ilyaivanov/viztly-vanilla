@@ -1,7 +1,5 @@
-import { loadPlaylistItems } from "../api/youtube";
 import { dom, anim, style } from "../browser";
-import { store, items } from "../domain";
-import actions from "../domain/actions";
+import { store } from "../domain";
 
 const viewItem = (item: Item) => {
   const { id, title } = item;
@@ -9,54 +7,50 @@ const viewItem = (item: Item) => {
   const viewChildren = () => {
     const res = document.createElement("div");
     res.style.overflow = "hidden";
-    if (!items.isLoading(store.state.items, item.id)) {
+    if (!store.isLoading(item.id)) {
       dom.setChildren(res, [renderTree(id)]);
     } else res.appendChild(dom.span({ text: "Loading..." }));
     return res;
   };
 
-  const commands: ItemCommands = {
-    select: () => dom.addClass(titleElem, "item-title_selected"),
-    unselect: () => dom.removeClass(titleElem, "item-title_selected"),
-    startLoading: () => {
-      loadPlaylistItems().then((itemChildren) =>
-        store.apply(actions.itemsLoaded(store.state, item.id, itemChildren))
-      );
-    },
-    stopLoading() {
-      if (items.isOpen(store.state.items, item.id)) {
-        const newContent = viewChildren();
-        if (childrenContainer)
-          anim.crossFade(
-            childrenContainer,
-            childrenContainer.firstChild as HTMLElement,
-            newContent
-          );
-      }
-    },
-    close: () => {
-      if (childrenContainer && anim.hasAnimations(childrenContainer))
-        anim.revertAnimations(childrenContainer);
-      else if (childrenContainer)
-        anim
-          .collapse(childrenContainer)
-          .addEventListener("finish", onChildrenAnimationDone);
-    },
-    open: () => {
-      if (childrenContainer && anim.hasAnimations(childrenContainer))
-        anim.revertAnimations(childrenContainer);
-      else {
-        childrenContainer = viewChildren();
-        elem.appendChild(childrenContainer);
-        anim
-          .expand(childrenContainer)
-          .addEventListener("finish", onChildrenAnimationDone);
-      }
-    },
+  const crossFadeIntoLoaded = () => {
+    if (store.isOpen(item.id)) {
+      const newContent = viewChildren();
+      if (childrenContainer)
+        anim.crossFade(
+          childrenContainer,
+          childrenContainer.firstChild as HTMLElement,
+          newContent
+        );
+    }
   };
+  store.onKeyed("item-loaded", item.id, crossFadeIntoLoaded);
+  store.onKeyed("item-select", item.id, () => {
+    console.log("item select");
+    dom.addClass(titleElem, "item-title_selected");
+  });
+  store.onKeyed("item-unselect", item.id, () =>
+    dom.removeClass(titleElem, "item-title_selected")
+  );
+
+  store.onKeyed("item-open", item.id, () => {
+    if (!anim.revertAnimations(childrenContainer)) {
+      childrenContainer = viewChildren();
+      elem.appendChild(childrenContainer);
+      anim
+        .expand(childrenContainer)
+        .addEventListener("finish", onChildrenAnimationDone);
+    }
+  });
+  store.onKeyed("item-close", item.id, () => {
+    if (!anim.revertAnimations(childrenContainer) && childrenContainer)
+      anim
+        .collapse(childrenContainer)
+        .addEventListener("finish", onChildrenAnimationDone);
+  });
 
   const onChildrenAnimationDone = () => {
-    if (childrenContainer && !items.isOpen(store.state.items, item.id)) {
+    if (childrenContainer && !store.isOpen(item.id)) {
       childrenContainer.remove();
       childrenContainer = undefined;
     }
@@ -65,19 +59,18 @@ const viewItem = (item: Item) => {
   const titleElem = dom.span({ text: title });
   const elem = dom.li({ children: [titleElem], id: id });
 
-  if (items.isOpen(store.state.items, id)) {
+  if (store.isOpen(id)) {
     childrenContainer = viewChildren();
     elem.appendChild(childrenContainer);
   }
 
-  store.registerView(elem, commands);
   return elem;
 };
 
 export const renderTree = (id?: string) => {
   const children = id
-    ? items.mapChildrenIfOpen(store.state.items, id, viewItem)
-    : items.mapRootItems(store.state.items, viewItem);
+    ? store.mapChildrenIfOpen(id, viewItem)
+    : store.mapRootItems(viewItem);
 
   return dom.ul({ children });
 };

@@ -25,6 +25,12 @@ export const addClass = (elem: Element, className: ClassName) =>
 export const removeClass = (elem: Element, className: ClassName) =>
   elem.classList.remove(className);
 
+export const toggleClass = (
+  elem: Element,
+  className: ClassName,
+  isSet?: boolean
+) => elem.classList.toggle(className, isSet);
+
 export const ul = ({ children }: { children: Element[] }) => {
   const elem = document.createElement("ul");
   appendChildren(elem, children);

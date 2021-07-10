@@ -60,8 +60,15 @@ export const expand = (container: HTMLElement): Animation => {
   );
 };
 
-export const revertAnimations = (elem: HTMLElement) =>
-  elem.getAnimations().forEach((animation) => animation.reverse());
-
 export const hasAnimations = (elem: HTMLElement) =>
   elem.getAnimations().length > 0;
+
+export const revertAnimations = (elem: HTMLElement | undefined) => {
+  if (!elem) return false;
+
+  if (hasAnimations(elem)) {
+    elem.getAnimations().forEach((animation) => animation.reverse());
+    return true;
+  }
+  return false;
+};

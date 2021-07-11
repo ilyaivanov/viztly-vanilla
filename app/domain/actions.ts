@@ -62,21 +62,32 @@ const focusOn = (state: AppState, area: FocusArea): ActionResult => {
       "item-unselect": state.searchSelectedItem,
       "search-input-focus": undefined,
     };
-  else if (area == "search")
-    commands = {
-      "item-select": state.searchSelectedItem,
-      "item-unselect": state.mainSelectedItem,
-      "search-input-focus": undefined,
-    };
-  else if (area === "search-input") {
+  else if (area == "search") {
+    if (!state.items["SEARCH"].children) {
+      commands = {
+        "item-unselect": state.mainSelectedItem,
+        "search-input-focus": undefined,
+        "search-tab-visibility-change": undefined,
+      };
+      area = "search-input";
+    } else
+      commands = {
+        "item-select": state.searchSelectedItem,
+        "search-tab-visibility-change": undefined,
+        "item-unselect": state.mainSelectedItem,
+        "search-input-focus": undefined,
+      };
+  } else if (area === "search-input") {
     if (state.uiState.areaFocused == "main")
       commands = {
         "item-unselect": state.mainSelectedItem,
+        "search-tab-visibility-change": undefined,
         "search-input-focus": undefined,
       };
     else if (state.uiState.areaFocused == "search")
       commands = {
         "item-unselect": state.searchSelectedItem,
+        "search-tab-visibility-change": undefined,
         "search-input-focus": undefined,
       };
   }
@@ -85,11 +96,32 @@ const focusOn = (state: AppState, area: FocusArea): ActionResult => {
       ...state,
       uiState: {
         ...state.uiState,
+        isSearchVisible: area === "search" || area === "search-input",
         areaFocused: area,
       },
     },
     commands,
   };
+};
+
+const hideSearch = (state: AppState): ActionResult => {
+  if (state.uiState.areaFocused !== "main")
+    return {
+      nextState: {
+        ...state,
+        uiState: {
+          ...state.uiState,
+          areaFocused: "main",
+          isSearchVisible: false,
+        },
+      },
+      commands: {
+        "search-tab-visibility-change": undefined,
+        "item-select": state.mainSelectedItem,
+        "search-input-focus": undefined,
+      },
+    };
+  return noop(state);
 };
 
 const itemsLoaded = (
@@ -218,4 +250,5 @@ export default {
   searchForVideos,
   searchResultsDone,
   changeSelectionOnFocusedArea,
+  hideSearch,
 };

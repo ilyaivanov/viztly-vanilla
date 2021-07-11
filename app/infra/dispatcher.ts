@@ -42,6 +42,11 @@ export class CommandsDispatcher {
         if (this.store.isSearchLoading()) this.searchTab.startLoading();
         else this.searchTab.stopLoading();
       }
+
+      if (command == "search-tab-visibility-change") {
+        if (this.store.isSearchVisible()) this.searchTab.show();
+        else this.searchTab.hide();
+      }
     });
   };
 
@@ -50,8 +55,8 @@ export class CommandsDispatcher {
   };
 
   //commands
-  private selectItem = (id: string) => this.getView(id).select();
-  private unselectItem = (id: string) => this.getView(id).unselect();
+  private selectItem = (id: string) => this.getView(id)?.select();
+  private unselectItem = (id: string) => this.getView(id)?.unselect();
   private open = (id: string) => this.getView(id).open();
   private close = (id: string) => {
     this.getView(id).close();

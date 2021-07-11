@@ -1,6 +1,7 @@
 type StoreEvent =
   | "search-input-focus"
   | "search-loading"
+  | "search-tab-visibility-change"
   | "search-find-videos"
   | "item-loaded"
   | "item-start-loading"

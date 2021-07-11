@@ -23,9 +23,6 @@ export class Store {
           s2
           s3  
       SEARCH
-        search1 -searchSelected
-        search2
-        search3
       `);
     this.state = {
       items: s.items,
@@ -58,12 +55,15 @@ export class Store {
   isSearchInputFocused = () =>
     this.state.uiState.areaFocused === "search-input";
   isSearchLoading = () => this.state.uiState.isSearchLoading;
+  isSearchVisible = () => this.state.uiState.isSearchVisible;
 
   //actions
   onKeyUp = () => this.performAction(actions.onUpArrow);
   onKeyDown = () => this.performAction(actions.onDownArrow);
   onKeyLeft = () => this.performAction(actions.onLeftArrow);
   onKeyRight = () => this.performAction(actions.onRightArrow);
+  onEscape = () => this.performAction(actions.hideSearch);
+
   itemsLoaded = (id: string, items: Item[]) =>
     this.performAction((state) => actions.itemsLoaded(state, id, items));
 

@@ -1,4 +1,4 @@
-import { dom } from "../browser";
+import { dom, style } from "../browser";
 import { store, glue } from "../infra";
 import { viewTree } from "./itemsTree";
 
@@ -19,7 +19,8 @@ export class SearchTab {
     this.tree = dom.div({ children: [this.renderResults()] });
 
     this.el = dom.div({
-      className: "search-tab",
+      classNames: ["search-tab"],
+      classMap: { "search-tab_hidden": !store.isSearchVisible() },
       children: [this.input, this.tree],
     });
 
@@ -31,7 +32,7 @@ export class SearchTab {
       ? viewTree("SEARCH")
       : dom.span({ text: "No Results" });
 
-  focusInput = () => this.input.focus();
+  focusInput = () => this.input.focus({ preventScroll: true });
   blurInput = () => this.input.blur();
 
   startLoading = () => {
@@ -42,6 +43,13 @@ export class SearchTab {
     dom.removeAllChildren(this.tree);
     this.tree.appendChild(this.renderResults());
   };
+
+  show = () => dom.removeClass(this.el, "search-tab_hidden");
+
+  hide = () => dom.addClass(this.el, "search-tab_hidden");
 }
 
 export const renderSearchTab = () => new SearchTab().el;
+
+style.class("search-tab", { transition: "margin-right 200ms" });
+style.class("search-tab_hidden", { marginRight: "-100%" });

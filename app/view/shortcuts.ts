@@ -17,5 +17,6 @@ export class KeyboardShortcuts {
       e.preventDefault();
       store.switchToSearchInput();
     }
+    if (e.code === "Escape") store.onEscape();
   };
 }

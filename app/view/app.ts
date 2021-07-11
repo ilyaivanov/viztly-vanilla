@@ -25,6 +25,7 @@ style.class("app", {
   width: "100vw",
   display: "flex",
   flexDirection: "row",
+  overflow: "hidden",
 });
 
 style.class("main-tab", {

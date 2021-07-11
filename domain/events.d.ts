@@ -7,4 +7,5 @@ type StoreEvent =
   | "item-unselect"
   | "item-open"
   | "item-close"
-  | "search-loading";
+  | "search-loading"
+  | "run-diagnostics";

@@ -31,8 +31,6 @@ export class CommandsDispatcher {
 
       if (event.type == "search-loading") {
         if (this.store.isSearchLoading()) {
-          //TODO: cleanupAllSubviews doesn't work: items are already removed from state
-          //I need to dispatch this comamnd before state update
           this.cleanupAllSubviews("SEARCH");
           this.searchTab.startLoading();
         } else this.searchTab.stopLoading();

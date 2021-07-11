@@ -128,9 +128,6 @@ const searchForVideos = (state: AppState): ActionResult => {
   return {
     nextState: {
       ...state,
-      items: items.assignItem(state.items, "SEARCH", () => ({
-        children: undefined,
-      })),
       uiState: {
         ...state.uiState,
         isSearchLoading: true,

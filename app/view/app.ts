@@ -1,4 +1,4 @@
-import { style, dom } from "../../browser";
+import { style, dom } from "../browser";
 import { viewTree } from "./itemsTree";
 import { renderSearchTab } from "./searchTab";
 

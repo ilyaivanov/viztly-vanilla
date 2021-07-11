@@ -1,8 +1,8 @@
 import { CommandsDispatcher } from "./dispatcher";
-import { KeyboardShortcuts } from "./shortcuts";
-import { Store } from "./store";
+import { KeyboardShortcuts } from "../view/shortcuts";
+import { Store } from "../domain/store";
 
 export const store = new Store();
 export const glue = new CommandsDispatcher(store);
 
-new KeyboardShortcuts(store);
+new KeyboardShortcuts();

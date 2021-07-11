@@ -1,5 +1,5 @@
-import { dom } from "../../browser";
-import { store, glue } from "../globals";
+import { dom } from "../browser";
+import { store, glue } from "../infra";
 import { viewTree } from "./itemsTree";
 
 export class SearchTab {

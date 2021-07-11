@@ -1,7 +1,7 @@
-import { loadPlaylistItems } from "../api/youtube";
-import { Store } from "./store";
-import { ItemView } from "./view/itemsTree";
-import { SearchTab } from "./view/searchTab";
+import { findVideos, loadPlaylistItems } from "../api/youtube";
+import { Store } from "../domain/store";
+import { ItemView } from "../view/itemsTree";
+import { SearchTab } from "../view/searchTab";
 
 export class CommandsDispatcher {
   constructor(private store: Store) {
@@ -24,6 +24,12 @@ export class CommandsDispatcher {
         loadPlaylistItems().then((items) =>
           this.store.itemsLoaded(itemId, items)
         );
+      }
+      if (command == "search-find-videos") {
+        //TODO: this is ugly. payload currently in string and it just happened that this workds for now
+        //I need to extends commands to be able to dispatch objects with type and payload
+        const term = itemId;
+        findVideos(term).then(this.store.searchDone);
       }
       if (command == "run-diagnostics") this.printEvents();
 

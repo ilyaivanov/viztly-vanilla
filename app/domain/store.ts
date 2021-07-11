@@ -1,9 +1,7 @@
-import { buildItems } from "../domain/specs/itemsBuilder";
-import actions from "../domain/actions";
-import { items } from "../domain";
-import { findVideos } from "../api/youtube";
+import { buildItems } from "./specs/itemsBuilder";
+import actions from "./actions";
+import * as items from "./items";
 
-//domain
 export class Store {
   state: AppState;
 
@@ -81,10 +79,11 @@ export class Store {
 
   searchForVideos = (term: string) => {
     this.performAction(actions.searchForVideos);
-    findVideos(term).then((items) => {
-      this.performAction((state) => actions.searchResultsDone(state, items));
-    });
+    this.dispatch({ "search-find-videos": term });
   };
+
+  searchDone = (items: Item[]) =>
+    this.performAction((state) => actions.searchResultsDone(state, items));
 
   private performAction = (action: Func1<AppState, ActionResult>) => {
     const { commands, nextState } = action(this.state);

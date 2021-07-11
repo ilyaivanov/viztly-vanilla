@@ -1,5 +1,5 @@
-import { anim, dom, style } from "../../browser";
-import { glue, store } from "../globals";
+import { anim, dom, style } from "../browser";
+import { glue, store } from "../infra";
 
 export class ItemView {
   el: HTMLLIElement;

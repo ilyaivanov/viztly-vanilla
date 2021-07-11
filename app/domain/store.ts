@@ -5,8 +5,8 @@ import * as items from "./items";
 export class Store {
   state: AppState;
 
-  private dispatch!: (commands: ActionCommands) => void;
-  saveDispatcher = (dispatcher: Action<ActionCommands>) =>
+  private dispatch!: Action<DomainEvent[]>;
+  saveDispatcher = (dispatcher: Action<DomainEvent[]>) =>
     (this.dispatch = dispatcher);
 
   constructor() {
@@ -36,7 +36,10 @@ export class Store {
     };
   }
 
-  init = () => this.dispatch({ "item-select": this.state.mainSelectedItem });
+  init = () =>
+    this.dispatch([
+      { type: "item-select", payload: this.state.mainSelectedItem },
+    ]);
 
   //queries
   mapChildren = <T>(id: string, mapper: Func1<Item, T>): T[] => {
@@ -75,19 +78,19 @@ export class Store {
   switchToSearchInput = () =>
     this.performAction((state) => actions.focusOn(state, "search-input"));
 
-  runDiagnostics = () => this.dispatch({ "run-diagnostics": undefined });
+  runDiagnostics = () => this.dispatch([{ type: "run-diagnostics" }]);
 
   searchForVideos = (term: string) => {
     this.performAction(actions.searchForVideos);
-    this.dispatch({ "search-find-videos": term });
+    this.dispatch([{ type: "search-find-videos", payload: term }]);
   };
 
   searchDone = (items: Item[]) =>
     this.performAction((state) => actions.searchResultsDone(state, items));
 
   private performAction = (action: Func1<AppState, ActionResult>) => {
-    const { commands, nextState } = action(this.state);
+    const { events, nextState } = action(this.state);
     this.state = nextState;
-    this.dispatch(commands);
+    this.dispatch(events);
   };
 }

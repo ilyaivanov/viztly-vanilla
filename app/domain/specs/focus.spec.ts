@@ -35,10 +35,11 @@ describe("havign two items in main and search ", () => {
         2
     SEARCH
     `);
-    const { nextState, commands } = actions.focusOn(state, "search");
-    expectEqual(commands, {
-      "item-select": "search-input",
-    });
+    const { nextState, events } = actions.focusOn(state, "search");
+    expectEqual(events, [
+      { type: "item-select", payload: "search-input" },
+      { type: "search-tab-visibility-change" },
+    ]);
     expectEqual(nextState.uiState.areaFocused, "search-input");
   });
 

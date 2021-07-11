@@ -1,10 +1,13 @@
-type StoreEvent =
-  | "search-loading"
-  | "search-tab-visibility-change"
-  | "search-find-videos"
-  | "item-loaded"
-  | "item-start-loading"
-  | "item-select"
-  | "item-open"
-  | "item-close"
-  | "run-diagnostics";
+type SimpleEvent<T> = { type: T };
+type EventWithPayload<T, TPayload> = { type: T; payload: TPayload };
+
+type DomainEvent =
+  | SimpleEvent<"search-tab-visibility-change">
+  | SimpleEvent<"search-loading">
+  | SimpleEvent<"run-diagnostics">
+  | EventWithPayload<"search-find-videos", string>
+  | EventWithPayload<"item-open", string>
+  | EventWithPayload<"item-close", string>
+  | EventWithPayload<"item-select", string>
+  | EventWithPayload<"item-loaded", string>
+  | EventWithPayload<"item-start-loading", string>;

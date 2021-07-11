@@ -54,26 +54,27 @@ const onUpArrow: ActionHandler = (state) => {
 };
 
 const focusOn = (state: AppState, area: FocusArea): ActionResult => {
-  let commands: ActionCommands = {};
+  let events: DomainEvent[] = [];
 
-  if (area === "main") commands = { "item-select": state.mainSelectedItem };
+  if (area === "main")
+    events = [{ type: "item-select", payload: state.mainSelectedItem }];
   else if (area == "search") {
     if (!state.items["SEARCH"].children) {
-      commands = {
-        "item-select": "search-input",
-        "search-tab-visibility-change": undefined,
-      };
+      events = [
+        { type: "item-select", payload: "search-input" },
+        { type: "search-tab-visibility-change" },
+      ];
       area = "search-input";
     } else
-      commands = {
-        "item-select": state.searchSelectedItem,
-        "search-tab-visibility-change": undefined,
-      };
+      events = [
+        { type: "item-select", payload: state.searchSelectedItem },
+        { type: "search-tab-visibility-change" },
+      ];
   } else if (area === "search-input") {
-    commands = {
-      "item-select": "search-input",
-      "search-tab-visibility-change": undefined,
-    };
+    events = [
+      { type: "item-select", payload: "search-input" },
+      { type: "search-tab-visibility-change" },
+    ];
   }
   return {
     nextState: {
@@ -84,7 +85,7 @@ const focusOn = (state: AppState, area: FocusArea): ActionResult => {
         areaFocused: area,
       },
     },
-    commands,
+    events: events,
   };
 };
 
@@ -99,10 +100,10 @@ const hideSearch = (state: AppState): ActionResult => {
           isSearchVisible: false,
         },
       },
-      commands: {
-        "search-tab-visibility-change": undefined,
-        "item-select": state.mainSelectedItem,
-      },
+      events: [
+        { type: "search-tab-visibility-change" },
+        { type: "item-select", payload: state.mainSelectedItem },
+      ],
     };
   return noop(state);
 };
@@ -120,7 +121,7 @@ const itemsLoaded = (
       isSearchLoading: false,
     },
   },
-  commands: { "item-loaded": itemId },
+  events: [{ type: "item-loaded", payload: itemId }],
 });
 
 const searchForVideos = (state: AppState): ActionResult => {
@@ -135,7 +136,7 @@ const searchForVideos = (state: AppState): ActionResult => {
         isSearchLoading: true,
       },
     },
-    commands: { "search-loading": undefined },
+    events: [{ type: "search-loading" }],
   };
 };
 
@@ -147,7 +148,7 @@ const searchResultsDone = (state: AppState, items: Item[]): ActionResult => {
       ...nextState,
       searchSelectedItem: nextState.items["SEARCH"].children![0],
     },
-    commands: { "search-loading": undefined },
+    events: [{ type: "search-loading" }],
   };
 };
 
@@ -155,7 +156,6 @@ const changeSelectionOnFocusedArea = (
   state: AppState,
   itemId: string
 ): ActionResult => {
-  const currentSelectedItem = getItemSelected(state);
   const nextState = { ...state };
   if (state.uiState.areaFocused == "main") nextState.mainSelectedItem = itemId;
   else if (state.uiState.areaFocused == "search")
@@ -166,9 +166,7 @@ const changeSelectionOnFocusedArea = (
     );
   return {
     nextState,
-    commands: {
-      "item-select": itemId,
-    },
+    events: [{ type: "item-select", payload: itemId }],
   };
 };
 
@@ -187,7 +185,7 @@ const startLoading = (state: AppState, itemId: string): ActionResult => ({
     ...state,
     items: items.assignItem(state.items, itemId, () => ({ isLoading: true })),
   },
-  commands: { "item-start-loading": itemId },
+  events: [{ type: "item-start-loading", payload: itemId }],
 });
 
 const close = (state: AppState, itemId: string): ActionResult => ({
@@ -195,7 +193,7 @@ const close = (state: AppState, itemId: string): ActionResult => ({
     ...state,
     items: items.assignItem(state.items, itemId, () => ({ isOpen: false })),
   },
-  commands: { "item-close": itemId },
+  events: [{ type: "item-close", payload: itemId }],
 });
 
 const open = (state: AppState, itemId: string): ActionResult => ({
@@ -203,12 +201,12 @@ const open = (state: AppState, itemId: string): ActionResult => ({
     ...state,
     items: items.assignItem(state.items, itemId, () => ({ isOpen: true })),
   },
-  commands: { "item-open": itemId },
+  events: [{ type: "item-open", payload: itemId }],
 });
 
 const noop = (state: AppState): ActionResult => ({
   nextState: state,
-  commands: {},
+  events: [],
 });
 
 const merge = (result1: ActionResult, result2: ActionResult): ActionResult => ({
@@ -216,10 +214,7 @@ const merge = (result1: ActionResult, result2: ActionResult): ActionResult => ({
     ...result1.nextState,
     ...result2.nextState,
   },
-  commands: {
-    ...result1.commands,
-    ...result2.commands,
-  },
+  events: result1.events.concat(result2.events),
 });
 
 export default {

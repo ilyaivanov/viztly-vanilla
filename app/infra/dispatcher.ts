@@ -12,27 +12,24 @@ export class CommandsDispatcher {
   saveView = (id: string, view: ItemView) => (this.itemViews[id] = view);
   removeView = (id: string) => delete this.itemViews[id];
 
-  private dispatchCommands = (commands: ActionCommands) => {
-    Object.entries(commands).forEach(([key, itemId]) => {
-      const command = key as StoreEvent;
-      if (command == "item-select") this.selectItem(itemId);
-      if (command == "item-open") this.open(itemId);
-      if (command == "item-close") this.close(itemId);
-      if (command == "item-loaded") this.itemLoaded(itemId);
-      if (command == "item-start-loading") {
+  private dispatchCommands = (events: DomainEvent[]) => {
+    events.forEach((event) => {
+      if (event.type == "item-select") this.selectItem(event.payload);
+      if (event.type == "item-open") this.open(event.payload);
+      if (event.type == "item-close") this.close(event.payload);
+      if (event.type == "item-loaded") this.itemLoaded(event.payload);
+      if (event.type == "item-start-loading") {
         loadPlaylistItems().then((items) =>
-          this.store.itemsLoaded(itemId, items)
+          this.store.itemsLoaded(event.payload, items)
         );
       }
-      if (command == "search-find-videos") {
-        //TODO: this is ugly. payload currently is string and it just happened that this workds for now
-        //I need to extends commands to be able to dispatch objects with type and payload
-        const term = itemId;
+      if (event.type == "search-find-videos") {
+        const term = event.payload;
         findVideos(term).then(this.store.searchDone);
       }
-      if (command == "run-diagnostics") this.printEvents();
+      if (event.type == "run-diagnostics") this.printEvents();
 
-      if (command == "search-loading") {
+      if (event.type == "search-loading") {
         if (this.store.isSearchLoading()) {
           //TODO: cleanupAllSubviews doesn't work: items are already removed from state
           //I need to dispatch this comamnd before state update
@@ -41,7 +38,7 @@ export class CommandsDispatcher {
         } else this.searchTab.stopLoading();
       }
 
-      if (command == "search-tab-visibility-change") {
+      if (event.type == "search-tab-visibility-change") {
         if (this.store.isSearchVisible()) this.searchTab.show();
         else this.searchTab.hide();
       }
@@ -81,9 +78,6 @@ export class CommandsDispatcher {
 
   //searchTab
   searchTab!: SearchTab;
-
-  private focusSearchInput = () => this.searchTab.focusInput();
-  private unfocusSearchInput = () => this.searchTab.blurInput();
 
   private cleanupAllSubviews = (itemId: string) =>
     this.store.forEachOpenChild(itemId, (item) => this.removeView(item.id));

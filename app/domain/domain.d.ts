@@ -1,9 +1,7 @@
 type ActionResult = {
   nextState: AppState;
-  commands: ActionCommands;
+  events: DomainEvent[];
 };
-
-type ActionCommands = Partial<Record<StoreEvent, string | undefined>>;
 
 type ElementId = string;
 

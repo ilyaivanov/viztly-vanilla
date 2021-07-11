@@ -1,5 +1,5 @@
-import { anim, dom, style } from "../browser";
-import { glue, store } from "./globals";
+import { anim, dom, style } from "../../browser";
+import { glue, store } from "../globals";
 
 export class ItemView {
   el: HTMLLIElement;
@@ -72,7 +72,10 @@ export class ItemView {
   static view = (item: Item): HTMLLIElement => new ItemView(item).el;
 }
 
-export const viewTree = (id = "HOME") =>
+export const viewTree = (id: string) =>
   dom.ul({ children: store.mapChildren(id, ItemView.view) });
 
-style.class("item-title_selected", { fontWeight: "bold" });
+style.class("item-title_selected", {
+  fontWeight: "bold",
+  color: "#9CDCFE",
+});

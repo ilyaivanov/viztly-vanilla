@@ -73,10 +73,10 @@ export class Store {
 
   //bindings
   bindToSearchFocus = (binder: Action<boolean>) => {
-    binder(this.state.uiState.areaFocused === "serch-input");
+    binder(this.state.uiState.areaFocused === "search-input");
     this.events.on("search-input-focus", () => {
       console.log("from binder");
-      binder(this.state.uiState.areaFocused === "serch-input");
+      binder(this.state.uiState.areaFocused === "search-input");
     });
   };
 

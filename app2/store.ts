@@ -1,6 +1,7 @@
 import { buildItems } from "../domain/specs/itemsBuilder";
 import actions from "../domain/actions";
 import { items } from "../domain";
+import { findVideos } from "../api/youtube";
 
 //domain
 export class Store {
@@ -22,7 +23,11 @@ export class Store {
         second
           s1
           s2
-          s3
+          s3  
+      SEARCH
+        search1 -searchSelected
+        search2
+        search3
       `);
     this.state = {
       items: s.items,
@@ -50,6 +55,12 @@ export class Store {
   forEachOpenChild = (id: string, action: Action<Item>) =>
     items.traverseOpenChildren(this.state.items, id, action);
 
+  hasSearchResults = () => !!this.state.items["SEARCH"].children;
+
+  isSearchInputFocused = () =>
+    this.state.uiState.areaFocused === "search-input";
+  isSearchLoading = () => this.state.uiState.isSearchLoading;
+
   //actions
   onKeyUp = () => this.performAction(actions.onUpArrow);
   onKeyDown = () => this.performAction(actions.onDownArrow);
@@ -58,7 +69,22 @@ export class Store {
   itemsLoaded = (id: string, items: Item[]) =>
     this.performAction((state) => actions.itemsLoaded(state, id, items));
 
+  switchToSearch = () =>
+    this.performAction((state) => actions.focusOn(state, "search"));
+
+  switchToMain = () =>
+    this.performAction((state) => actions.focusOn(state, "main"));
+  switchToSearchInput = () =>
+    this.performAction((state) => actions.focusOn(state, "search-input"));
+
   runDiagnostics = () => this.dispatch({ "run-diagnostics": undefined });
+
+  searchForVideos = (term: string) => {
+    this.performAction(actions.searchForVideos);
+    findVideos(term).then((items) => {
+      this.performAction((state) => actions.searchResultsDone(state, items));
+    });
+  };
 
   private performAction = (action: Func1<AppState, ActionResult>) => {
     const { commands, nextState } = action(this.state);

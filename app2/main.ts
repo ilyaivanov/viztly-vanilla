@@ -1,5 +1,5 @@
 import { store } from "./globals";
-import { viewTree } from "./view";
+import { renderApp } from "./view/app";
 
-document.body.appendChild(viewTree());
+document.body.appendChild(renderApp());
 store.init();

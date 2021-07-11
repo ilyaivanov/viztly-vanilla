@@ -34,7 +34,7 @@ document.addEventListener("keydown", (e) => {
   if (e.code === "ArrowLeft") actions.onArrowLeft();
   if (e.key === "2" && e.ctrlKey) {
     e.preventDefault();
-    if (!store.state.items["SEARCH"].children) actions.focusOn("serch-input");
+    if (!store.state.items["SEARCH"].children) actions.focusOn("search-input");
     else actions.focusOn("search");
   }
   if (e.key === "1" && e.ctrlKey) {
@@ -44,7 +44,7 @@ document.addEventListener("keydown", (e) => {
 
   if (e.key === "k" && e.ctrlKey) {
     e.preventDefault();
-    actions.focusOn("serch-input");
+    actions.focusOn("search-input");
   }
   if (e.key === "b" && e.ctrlKey) {
     console.log(store.getEventsCount());

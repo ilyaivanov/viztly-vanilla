@@ -68,7 +68,7 @@ const focusOn = (state: AppState, area: FocusArea): ActionResult => {
       "item-unselect": state.mainSelectedItem,
       "search-input-focus": undefined,
     };
-  else if (area === "serch-input") {
+  else if (area === "search-input") {
     if (state.uiState.areaFocused == "main")
       commands = {
         "item-unselect": state.mainSelectedItem,

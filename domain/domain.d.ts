@@ -22,7 +22,7 @@ type UIState = {
   areaFocused: FocusArea;
 };
 
-type FocusArea = "main" | "search" | "serch-input";
+type FocusArea = "main" | "search" | "search-input";
 
 type Items = Record<string, Item>;
 

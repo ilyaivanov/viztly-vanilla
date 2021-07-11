@@ -1,6 +1,7 @@
 import { loadPlaylistItems } from "../api/youtube";
 import { Store } from "./store";
-import { ItemView } from "./view";
+import { ItemView } from "./view/itemsTree";
+import { SearchTab } from "./view/searchTab";
 
 export class CommandsDispatcher {
   constructor(private store: Store) {
@@ -25,6 +26,16 @@ export class CommandsDispatcher {
         );
       }
       if (command == "run-diagnostics") this.printEvents();
+
+      if (command == "search-input-focus") {
+        if (this.store.isSearchInputFocused()) this.focusSearchInput();
+        else this.unfocusSearchInput();
+      }
+
+      if (command == "search-loading") {
+        if (this.store.isSearchLoading()) this.searchTab.startLoading();
+        else this.searchTab.stopLoading();
+      }
     });
   };
 
@@ -44,4 +55,10 @@ export class CommandsDispatcher {
   private itemLoaded = (id: string) => this.getView(id).itemLoaded();
 
   private getView = (id: string) => this.itemViews[id];
+
+  //searchTab
+  searchTab!: SearchTab;
+
+  private focusSearchInput = () => this.searchTab.focusInput();
+  private unfocusSearchInput = () => this.searchTab.blurInput();
 }

@@ -11,5 +11,11 @@ export class KeyboardShortcuts {
     if (e.code === "ArrowLeft") this.store.onKeyLeft();
     if (e.code === "ArrowRight") this.store.onKeyRight();
     if (e.code === "KeyB" && e.ctrlKey) this.store.runDiagnostics();
+    if (e.key === "2" && e.ctrlKey) this.store.switchToSearch();
+    if (e.key === "1" && e.ctrlKey) this.store.switchToMain();
+    if (e.key === "k" && e.ctrlKey) {
+      e.preventDefault();
+      this.store.switchToSearchInput();
+    }
   };
 }

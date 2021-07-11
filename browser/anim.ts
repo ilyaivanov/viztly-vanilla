@@ -43,7 +43,10 @@ export const collapse = (container: HTMLElement): Animation => {
   const currentHeight = container.clientHeight;
 
   return container.animate(
-    [{ height: `${currentHeight}px` }, { height: `0px` }],
+    [
+      { height: `${currentHeight}px`, opacity: 1 },
+      { height: `0px`, opacity: 0 },
+    ],
     {
       duration: animationTimings.expandCollapse * animationSpeedCoefficient,
     }
@@ -53,7 +56,10 @@ export const expand = (container: HTMLElement): Animation => {
   const currentHeight = container.clientHeight;
 
   return container.animate(
-    [{ height: `0px` }, { height: `${currentHeight}px` }],
+    [
+      { height: `0px`, opacity: 0 },
+      { height: `${currentHeight}px`, opacity: 1 },
+    ],
     {
       duration: animationTimings.expandCollapse * animationSpeedCoefficient,
     }

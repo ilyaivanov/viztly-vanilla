@@ -5,7 +5,7 @@ import * as items from "./items";
 export class Store {
   state: AppState;
 
-  dispatch!: (commands: ActionCommands) => void;
+  private dispatch!: (commands: ActionCommands) => void;
   saveDispatcher = (dispatcher: Action<ActionCommands>) =>
     (this.dispatch = dispatcher);
 

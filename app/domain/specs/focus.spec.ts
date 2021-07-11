@@ -37,8 +37,7 @@ describe("havign two items in main and search ", () => {
     `);
     const { nextState, commands } = actions.focusOn(state, "search");
     expectEqual(commands, {
-      "search-input-focus": undefined,
-      "item-unselect": "1",
+      "item-select": "search-input",
     });
     expectEqual(nextState.uiState.areaFocused, "search-input");
   });

@@ -56,17 +56,11 @@ const onUpArrow: ActionHandler = (state) => {
 const focusOn = (state: AppState, area: FocusArea): ActionResult => {
   let commands: ActionCommands = {};
 
-  if (area === "main")
-    commands = {
-      "item-select": state.mainSelectedItem,
-      "item-unselect": state.searchSelectedItem,
-      "search-input-focus": undefined,
-    };
+  if (area === "main") commands = { "item-select": state.mainSelectedItem };
   else if (area == "search") {
     if (!state.items["SEARCH"].children) {
       commands = {
-        "item-unselect": state.mainSelectedItem,
-        "search-input-focus": undefined,
+        "item-select": "search-input",
         "search-tab-visibility-change": undefined,
       };
       area = "search-input";
@@ -74,22 +68,12 @@ const focusOn = (state: AppState, area: FocusArea): ActionResult => {
       commands = {
         "item-select": state.searchSelectedItem,
         "search-tab-visibility-change": undefined,
-        "item-unselect": state.mainSelectedItem,
-        "search-input-focus": undefined,
       };
   } else if (area === "search-input") {
-    if (state.uiState.areaFocused == "main")
-      commands = {
-        "item-unselect": state.mainSelectedItem,
-        "search-tab-visibility-change": undefined,
-        "search-input-focus": undefined,
-      };
-    else if (state.uiState.areaFocused == "search")
-      commands = {
-        "item-unselect": state.searchSelectedItem,
-        "search-tab-visibility-change": undefined,
-        "search-input-focus": undefined,
-      };
+    commands = {
+      "item-select": "search-input",
+      "search-tab-visibility-change": undefined,
+    };
   }
   return {
     nextState: {
@@ -118,7 +102,6 @@ const hideSearch = (state: AppState): ActionResult => {
       commands: {
         "search-tab-visibility-change": undefined,
         "item-select": state.mainSelectedItem,
-        "search-input-focus": undefined,
       },
     };
   return noop(state);
@@ -185,7 +168,6 @@ const changeSelectionOnFocusedArea = (
     nextState,
     commands: {
       "item-select": itemId,
-      "item-unselect": currentSelectedItem,
     },
   };
 };

@@ -1,6 +1,7 @@
 import { anim, dom, style } from "../browser";
 import { levels, spacings } from "../designSystem";
 import { glue, store } from "../infra";
+import { ItemIcon } from "./itemIcon";
 
 export class ItemView {
   el: HTMLDivElement;
@@ -10,7 +11,7 @@ export class ItemView {
   constructor(private item: Item, private level = 0) {
     const { title, id } = item;
     this.title = dom.div({
-      children: [dom.span({ text: title })],
+      children: [new ItemIcon().el, dom.span({ text: title })],
       classNames: ["item-row", levels.rowForLevel(level)],
     });
     this.el = dom.div({ children: [this.title] });

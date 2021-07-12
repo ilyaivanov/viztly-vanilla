@@ -9,6 +9,7 @@ type ClassName =
   | "item-row"
   | "item-children-border"
   | "item-row-children"
+  | "item-icon-svg"
   | "item-title_selected"
   | "item-children"
   | "keyboard-label";

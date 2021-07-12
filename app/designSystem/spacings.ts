@@ -2,7 +2,7 @@ const borderWidth = 2;
 const treeMaxWidth = 700;
 
 const outerRadius = 16;
-// const innerRadius = 6;
+const innerRadius = 6;
 const chevronSize = 16;
 const borderSize = 2;
 const rowVecticalPadding = 4;
@@ -12,16 +12,16 @@ export const spacings = {
   treeMaxWidth,
 
   outerRadius,
+  innerRadius,
   imageSize: outerRadius * 2,
   rowHeight: outerRadius * 2 + rowVecticalPadding * 2,
   chevronSize,
-  //   innerRadius,
   //   borderSize,
   //   rowLeftPadding: chevronSize / 2,
   spacePerLevel: chevronSize + outerRadius - borderSize / 2 + 5,
   //   negativeMarginForRowAtZeroLevel: 1000,
   rowVecticalPadding,
-  //   spaceBetweenCircleAndText: 8,
+  spaceBetweenCircleAndText: 8,
   //   headerHeight: 48,
   //   bodyScrollWidth: 6,
   //   pageFontSize: 16,

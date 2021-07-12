@@ -27,4 +27,33 @@ describe("havign two items in main and search ", () => {
     expect(nextState.mainSelectedItem).toEqual("1");
     expect(nextState.searchSelectedItem).toEqual("s2");
   });
+
+  it("having no search items focusing on search tab focuses search input", () => {
+    const state: AppState = buildState(`
+    HOME
+        1 -mainSelected
+        2
+    SEARCH
+    `);
+    const { nextState, events } = actions.focusOn(state, "search");
+    expectEqual(events, [
+      { type: "item-select", payload: "search-input" },
+      { type: "search-tab-visibility-change" },
+    ]);
+    expectEqual(nextState.uiState.areaFocused, "search-input");
+  });
+
+  it("by default search is hidden", () => {
+    const state: AppState = buildState(`
+    HOME
+        1 -mainSelected
+        2
+    SEARCH
+    `);
+
+    expectEqual(state.uiState.isSearchVisible, false);
+  });
 });
+
+const expectEqual = <T>(actual: T, expected: T) =>
+  expect(actual).toEqual(expected);

@@ -75,6 +75,24 @@ export const mapChildrenIfOpen = <T>(
   } else return [];
 };
 
+export const traverseOpenChildren = (
+  items: Items,
+  itemId: string,
+  action: Action<Item>
+) => {
+  const traverseChildren = (children: string[]) => {
+    children.forEach((id) => {
+      action(items[id]);
+      if (isOpen(items, id)) {
+        const subchilds = items[id].children;
+        if (subchilds) traverseChildren(subchilds);
+      }
+    });
+  };
+  const children = items[itemId].children;
+  if (children) traverseChildren(children);
+};
+
 export const getChildren = (items: Items, id: string): string[] =>
   items[id].children || [];
 

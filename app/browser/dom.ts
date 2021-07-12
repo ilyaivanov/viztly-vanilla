@@ -25,6 +25,12 @@ export const addClass = (elem: Element, className: ClassName) =>
 export const removeClass = (elem: Element, className: ClassName) =>
   elem.classList.remove(className);
 
+export const toggleClass = (
+  elem: Element,
+  className: ClassName,
+  isSet?: boolean
+) => elem.classList.toggle(className, isSet);
+
 export const ul = ({ children }: { children: Element[] }) => {
   const elem = document.createElement("ul");
   appendChildren(elem, children);
@@ -39,15 +45,23 @@ export const ol = ({ children }: { children: Element[] }) => {
 
 type DivProps = {
   className?: ClassName;
+  classNames?: ClassName[];
+  classMap?: Partial<Record<ClassName, boolean>>;
   children?: Element[];
   id?: string;
   onKeyDown?: (e: KeyboardEvent) => void;
 };
 
-export const div = ({ className, children, id }: DivProps) => {
+export const div = (props: DivProps) => {
   const elem = document.createElement("div");
 
+  const { className, classNames, classMap, children, id } = props;
   if (className) elem.classList.add(className);
+  if (classNames) classNames.forEach((cs) => elem.classList.add(cs));
+  if (classMap)
+    Object.entries(classMap).forEach(([cs, isSet]) =>
+      toggleClass(elem, cs as ClassName, isSet)
+    );
   if (id) elem.id = id;
   if (children) appendChildren(elem, children);
   return elem;

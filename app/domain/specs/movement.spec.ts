@@ -127,9 +127,9 @@ it("having two items with first selected going left does nothing", () => {
         1  -mainSelected
         2 
     `);
-  const { nextState, commands } = actions.onLeftArrow(state);
+  const { nextState, events: commands } = actions.onLeftArrow(state);
   expect(nextState).toEqual(state);
-  expect(commands).toEqual({});
+  expect(commands).toEqual([]);
 });
 
 // //commenting out since I'm loading all folders right now

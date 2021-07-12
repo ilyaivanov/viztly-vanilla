@@ -11,8 +11,14 @@ export class KeyboardShortcuts {
     if (e.code === "ArrowLeft") store.onKeyLeft();
     if (e.code === "ArrowRight") store.onKeyRight();
     if (e.code === "KeyB" && e.ctrlKey) store.runDiagnostics();
-    if (e.key === "2" && e.ctrlKey) store.switchToSearch();
-    if (e.key === "1" && e.ctrlKey) store.switchToMain();
+    if (e.key === "2" && e.ctrlKey) {
+      e.preventDefault();
+      store.switchToSearch();
+    }
+    if (e.key === "1" && e.ctrlKey) {
+      e.preventDefault();
+      store.switchToMain();
+    }
     if (e.key === "k" && e.ctrlKey) {
       e.preventDefault();
       store.switchToSearchInput();

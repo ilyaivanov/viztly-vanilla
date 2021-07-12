@@ -12,7 +12,7 @@ export class Store {
   constructor() {
     const s = buildItems(`
       HOME
-        first12 -mainSelected -open
+        first -mainSelected -open
           first1
           first2 -open
             first2.1

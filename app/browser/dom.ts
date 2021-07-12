@@ -1,4 +1,4 @@
-const appendChildren = (elem: Element, children: Element[]) =>
+const appendChildren = (elem: Element, children: Node[]) =>
   children.forEach((child) => elem.appendChild(child));
 
 export const removeAllChildren = (elem: Element) => {
@@ -8,6 +8,12 @@ export const removeAllChildren = (elem: Element) => {
 export const setChildren = (elem: Element, children: Element[]) => {
   removeAllChildren(elem);
   children.forEach((child) => elem.appendChild(child));
+};
+
+export const fragment = (children: Element[]) => {
+  const frag = document.createDocumentFragment();
+  children.forEach((child) => frag.appendChild(child));
+  return frag;
 };
 
 type ClassMap = Record<ClassName, boolean>;
@@ -47,7 +53,7 @@ type DivProps = {
   className?: ClassName;
   classNames?: ClassName[];
   classMap?: Partial<Record<ClassName, boolean>>;
-  children?: Element[];
+  children?: Node[];
   id?: string;
   onKeyDown?: (e: KeyboardEvent) => void;
 };

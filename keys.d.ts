@@ -6,6 +6,9 @@ type ClassName =
   | "search-tab-input"
   | "item-title"
   | "item-done"
+  | "item-row"
+  | "item-children-border"
+  | "item-row-children"
   | "item-title_selected"
   | "item-children"
   | "keyboard-label";

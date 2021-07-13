@@ -10,6 +10,8 @@ type ClassName =
   | "item-children-border"
   | "item-row-children"
   | "item-icon-svg"
+  | "item-icon-circle"
+  | "item-icon-circle_hidden"
   | "item-title_selected"
   | "item-children"
   | "keyboard-label";

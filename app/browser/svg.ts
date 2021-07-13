@@ -1,7 +1,9 @@
+import * as dom from "./dom";
 import { camelToSnakeCase, Styles } from "./style";
 
 type ClassDefinitions = {
   className?: ClassName;
+  classMap?: Partial<Record<ClassName, boolean>>;
 };
 
 type SvgEvents = {};
@@ -14,20 +16,21 @@ export interface SvgProps extends BaseSvg {
   fill?: string;
   children: (SVGElement | undefined)[];
 }
-export const svg = (props: SvgProps): SVGSVGElement => {
-  const res = appendChildren(
-    assignEvents(
-      assignSvgAttributes(
-        assignSvgInlineStyles(svgElem("svg"), props.style),
+export const svg = (props: SvgProps): SVGSVGElement =>
+  dom.assignClasses(
+    appendChildren(
+      assignEvents(
+        assignSvgAttributes(
+          assignSvgInlineStyles(svgElem("svg"), props.style),
+          props
+        ),
         props
       ),
-      props
+      props.children
     ),
-    props.children
+    props
   );
-  if (props.className) res.classList.add(props.className);
-  return res;
-};
+
 export interface CircleProps extends ClassDefinitions {
   cx: number;
   cy: number;
@@ -37,7 +40,10 @@ export interface CircleProps extends ClassDefinitions {
   strokeWidth?: number;
 }
 export const circle = (circleProps: CircleProps) =>
-  assignSvgAttributes(svgElem("circle"), circleProps);
+  dom.assignClasses(
+    assignSvgAttributes(svgElem("circle"), circleProps),
+    circleProps
+  );
 
 export interface PolygonProps extends ClassDefinitions {
   points: string;
@@ -72,8 +78,11 @@ const svgAttributesIgnored: Record<string, boolean> = {
 const attributesInPascal: Record<string, boolean> = {
   viewBox: true,
 };
-const assignSvgAttributes = <T extends Element>(elem: T, attributes: {}): T => {
-  // assignClasses(elem, attributes);
+const assignSvgAttributes = <T extends Element>(
+  elem: T,
+  attributes: {} & ClassDefinitions
+): T => {
+  if (attributes.className) elem.classList.add(attributes.className);
   Object.entries(attributes).forEach(([key, value]) => {
     if (value && !svgAttributesIgnored[key]) {
       const keyConverted = attributesInPascal[key]

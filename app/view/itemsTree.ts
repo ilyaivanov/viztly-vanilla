@@ -7,11 +7,12 @@ export class ItemView {
   el: HTMLDivElement;
   title: HTMLDivElement;
   childrenContainer: HTMLElement | undefined;
-
+  icon: ItemIcon;
   constructor(private item: Item, private level = 0) {
     const { title, id } = item;
+    this.icon = new ItemIcon(item);
     this.title = dom.div({
-      children: [new ItemIcon().el, dom.span({ text: title })],
+      children: [this.icon.el, dom.span({ text: title })],
       classNames: ["item-row", levels.rowForLevel(level)],
     });
     this.el = dom.div({ children: [this.title] });
@@ -34,6 +35,7 @@ export class ItemView {
         .expand(this.childrenContainer)
         .addEventListener("finish", this.onChildrenAnimationDone);
     }
+    this.icon.open();
   };
 
   close = () => {
@@ -42,6 +44,8 @@ export class ItemView {
       anim
         .collapse(childEl)
         .addEventListener("finish", this.onChildrenAnimationDone);
+
+    this.icon.close();
   };
 
   itemLoaded = () => this.crossFadeIntoLoaded();

@@ -66,6 +66,18 @@ export const expand = (container: HTMLElement): Animation => {
   );
 };
 
+export const hideViaOpacity = (container: Element): Animation => {
+  return container.animate([{ opacity: 1 }, { opacity: 0 }], {
+    duration: animationTimings.expandCollapse * animationSpeedCoefficient,
+  });
+};
+
+export const showViaOpacity = (container: Element): Animation => {
+  return container.animate([{ opacity: 0 }, { opacity: 1 }], {
+    duration: animationTimings.expandCollapse * animationSpeedCoefficient,
+  });
+};
+
 export const hasAnimations = (elem: HTMLElement) =>
   elem.getAnimations().length > 0;
 

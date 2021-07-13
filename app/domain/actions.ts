@@ -205,6 +205,28 @@ const open = (state: AppState, itemId: string): ActionResult => ({
   events: [{ type: "item-open", payload: itemId }],
 });
 
+const removeSelected = (state: AppState): ActionResult => {
+  const itemId = getItemSelected(state);
+  //TODO: item above might not exist
+  const prevItem = items.getItemAbove(state.items, itemId)!;
+  const parentId = items.getParentId(state.items, itemId);
+  const parent = state.items[parentId];
+
+  //TODO: remove all children, not only this node
+  delete state.items[itemId];
+  if (items.isContainer(parent))
+    parent.children = parent.children.filter((id) => id != itemId);
+
+  const { nextState } = changeSelectionOnFocusedArea(state, prevItem);
+  return {
+    nextState,
+    events: [
+      { type: "item-select", payload: prevItem },
+      { type: "item-removed", payload: itemId },
+    ],
+  };
+};
+
 const noop = (state: AppState): ActionResult => ({
   nextState: state,
   events: [],
@@ -229,4 +251,5 @@ export default {
   searchResultsDone,
   changeSelectionOnFocusedArea,
   hideSearch,
+  removeSelected,
 };

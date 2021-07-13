@@ -56,6 +56,11 @@ export class ItemView {
     this.icon.close();
   };
 
+  remove = () =>
+    anim.flyAwayAndCollapse(this.el).addEventListener("finish", () => {
+      this.el.remove();
+    });
+
   itemLoaded = () => this.crossFadeIntoLoaded();
 
   private crossFadeIntoLoaded = () => {

@@ -6,6 +6,7 @@ export class KeyboardShortcuts {
   }
 
   handleKey = (e: KeyboardEvent) => {
+    console.log(e.code);
     if (e.code === "ArrowDown") store.onKeyDown();
     if (e.code === "ArrowUp") store.onKeyUp();
     if (e.code === "ArrowLeft") store.onKeyLeft();
@@ -24,5 +25,8 @@ export class KeyboardShortcuts {
       store.switchToSearchInput();
     }
     if (e.code === "Escape") store.onEscape();
+
+    if (e.code === "Backspace" && e.shiftKey && e.ctrlKey)
+      store.removeSelected();
   };
 }

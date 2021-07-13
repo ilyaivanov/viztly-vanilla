@@ -78,6 +78,22 @@ export const traverseOpenChildren = (
   if (children) traverseChildren(children);
 };
 
+export const traverseAllChildren = (
+  items: Items,
+  itemId: string,
+  action: Action<Item>
+) => {
+  const traverseChildren = (children: string[]) => {
+    children.forEach((id) => {
+      action(items[id]);
+      const subchilds = getChildrenIds(items, id);
+      if (subchilds) traverseChildren(subchilds);
+    });
+  };
+  const children = getChildrenIds(items, itemId);
+  if (children) traverseChildren(children);
+};
+
 export const assignItem = (
   items: Items,
   id: string,

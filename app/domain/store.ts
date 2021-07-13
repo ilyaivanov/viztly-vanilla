@@ -59,6 +59,7 @@ export class Store {
   onKeyLeft = () => this.performAction(actions.onLeftArrow);
   onKeyRight = () => this.performAction(actions.onRightArrow);
   onEscape = () => this.performAction(actions.hideSearch);
+  removeSelected = () => this.performAction(actions.removeSelected);
 
   itemsLoaded = (id: string, items: Item[]) =>
     this.performAction((state) => actions.itemsLoaded(state, id, items));

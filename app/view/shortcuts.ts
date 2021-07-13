@@ -28,5 +28,6 @@ export class KeyboardShortcuts {
 
     if (e.code === "Backspace" && e.shiftKey && e.ctrlKey)
       store.removeSelected();
+    if (e.code === "F2") store.startRenameSelectedItem();
   };
 }

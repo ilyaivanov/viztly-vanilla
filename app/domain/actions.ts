@@ -230,6 +230,13 @@ const removeSelected = (state: AppState): ActionResult => {
   };
 };
 
+export const startRenameSelectedItem = (state: AppState): ActionResult => {
+  return {
+    nextState: state,
+    events: [{ type: "item-startRename", payload: getItemSelected(state) }],
+  };
+};
+
 const noop = (state: AppState): ActionResult => ({
   nextState: state,
   events: [],
@@ -255,4 +262,5 @@ export default {
   changeSelectionOnFocusedArea,
   hideSearch,
   removeSelected,
+  startRenameSelectedItem,
 };

@@ -1,3 +1,5 @@
+//TODO: this screams for BEM. I need to consider using BEM to organize my classes
+
 type ClassName =
   | "app"
   | "main-tab"
@@ -5,6 +7,7 @@ type ClassName =
   | "search-tab_hidden"
   | "search-tab-input"
   | "item-title"
+  | "item-titleInput"
   | "item-done"
   | "item-row"
   | "item-row-container"

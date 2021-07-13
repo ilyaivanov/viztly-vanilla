@@ -18,6 +18,7 @@ export class CommandsDispatcher {
       if (event.type == "item-open") this.open(event.payload);
       if (event.type == "item-close") this.close(event.payload);
       if (event.type == "item-removed") this.remove(event.payload);
+      if (event.type == "item-startRename") this.startRename(event.payload);
       if (event.type == "item-loaded") this.itemLoaded(event.payload);
       if (event.type == "item-start-loading") {
         loadPlaylistItems().then((items) =>
@@ -72,6 +73,7 @@ export class CommandsDispatcher {
     this.cleanupAllSubviews(id);
   };
   private remove = (id: string) => this.getView(id)?.remove();
+  private startRename = (id: string) => this.getView(id)?.startRename();
 
   private itemLoaded = (id: string) => this.getView(id).itemLoaded();
 

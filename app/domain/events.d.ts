@@ -8,6 +8,7 @@ type DomainEvent =
   | EventWithPayload<"search-find-videos", string>
   | EventWithPayload<"item-open", string>
   | EventWithPayload<"item-close", string>
+  | EventWithPayload<"item-startRename", string>
   | EventWithPayload<"item-removed", string>
   | EventWithPayload<"item-select", string>
   | EventWithPayload<"item-loaded", string>

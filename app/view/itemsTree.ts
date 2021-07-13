@@ -6,13 +6,15 @@ import { ItemIcon } from "./itemIcon";
 export class ItemView {
   el: HTMLDivElement;
   title: HTMLDivElement;
+  titleText: HTMLSpanElement;
   childrenContainer: HTMLElement | undefined;
   icon: ItemIcon;
   constructor(private item: Item, private level = 0) {
     const { title, id } = item;
     this.icon = new ItemIcon(item);
+    this.titleText = dom.span({ text: title });
     this.title = dom.div({
-      children: [this.icon.el, dom.span({ text: title })],
+      children: [this.icon.el, this.titleText],
       classNames: ["item-row", levels.rowForLevel(level)],
       classMap: { "item-row-container": store.isContainer(item) },
     });
@@ -60,6 +62,41 @@ export class ItemView {
     anim.flyAwayAndCollapse(this.el).addEventListener("finish", () => {
       this.el.remove();
     });
+
+  renameInput?: HTMLInputElement;
+  startRename = () => {
+    if (!this.renameInput) {
+      this.titleText.remove();
+      this.renameInput = dom.input({
+        value: this.item.title,
+        className: "item-titleInput",
+        onKeyDown: (e) => {
+          if (
+            e.code === "Enter" ||
+            e.code === "Escape" ||
+            e.code == "ArrowDown" ||
+            e.code == "ArrowUp"
+          )
+            this.finishRename();
+        },
+      });
+      this.title.appendChild(this.renameInput);
+      this.renameInput.focus();
+    } else {
+      //TODO: this is a temporary hack. I need to make sure input is being removed when I select something else
+      this.renameInput.focus();
+    }
+  };
+
+  finishRename = () => {
+    if (this.renameInput) {
+      this.item.title = this.renameInput.value;
+      this.renameInput.remove();
+      this.titleText.textContent = this.item.title;
+      this.title.appendChild(this.titleText);
+      this.renameInput = undefined;
+    }
+  };
 
   itemLoaded = () => this.crossFadeIntoLoaded();
 
@@ -143,3 +180,5 @@ style.class("item-children-border", {
   bottom: 0,
   backgroundColor: "#4C5155",
 });
+
+style.class("item-titleInput", { width: "100%" });

@@ -60,6 +60,8 @@ export class Store {
   onKeyRight = () => this.performAction(actions.onRightArrow);
   onEscape = () => this.performAction(actions.hideSearch);
   removeSelected = () => this.performAction(actions.removeSelected);
+  startRenameSelectedItem = () =>
+    this.performAction(actions.startRenameSelectedItem);
 
   itemsLoaded = (id: string, items: Item[]) =>
     this.performAction((state) => actions.itemsLoaded(state, id, items));

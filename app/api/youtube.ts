@@ -1,18 +1,12 @@
-import { getRandomItems } from "../domain/items";
+import { loadSearchResults, loadPlaylistItems as fo } from "./fakeItemsLoader";
+import { mapReponseItem } from "./mapper";
+
 export const loadPlaylistItems = (): Promise<Item[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(getRandomItems());
-    }, 2000);
-  });
+  return fo("some").then((response) => response.items.map(mapReponseItem));
 };
 
 export const findVideos = (term: string): Promise<Item[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(
-        getRandomItems().map((i) => ({ ...i, title: i.title + ` (${term})` }))
-      );
-    }, 2000);
-  });
+  return loadSearchResults(term).then((response) =>
+    response.items.map(mapReponseItem)
+  );
 };

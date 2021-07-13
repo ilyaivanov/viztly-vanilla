@@ -15,8 +15,10 @@ export const buildItems = (template: string): BuildResult => {
     const parent = currentParent();
     if (parent) {
       const item = res[parent.id];
-      if (!item.children) item.children = [];
-      item.children.push(childId);
+      if (item.type !== "YTvideo") {
+        if (!item.children) item.children = [];
+        item.children.push(childId);
+      }
     }
   };
 
@@ -88,9 +90,11 @@ const assignItem = (
 const roots = new Set(["HOME", "SEARCH"]);
 
 const mapItem = (id: string, title: string, options: Set<string>): Item => {
-  const item: Item = {
+  const item: Folder = {
     id,
     title,
+    type: "folder",
+    children: [],
   };
 
   if (roots.has(id) || options.has("-open")) item.isOpen = true;

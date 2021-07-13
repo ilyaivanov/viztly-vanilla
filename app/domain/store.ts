@@ -1,4 +1,3 @@
-import { buildItems } from "./specs/itemsBuilder";
 import actions from "./actions";
 import * as items from "./items";
 
@@ -10,24 +9,10 @@ export class Store {
     (this.dispatch = dispatcher);
 
   constructor() {
-    const s = buildItems(`
-      HOME
-        first -mainSelected -open
-          first1
-          first2 -open
-            first2.1
-            first2.2
-            first2.3
-        second
-          s1
-          s2
-          s3  
-      SEARCH
-      `);
     this.state = {
-      items: s.items,
-      mainSelectedItem: s.mainTabSelectedId,
-      searchSelectedItem: s.searchTabSelectedId,
+      items: initialItems(),
+      mainSelectedItem: "i8SE2by3",
+      searchSelectedItem: "",
       uiState: {
         areaFocused: "main",
         isSearchLoading: false,
@@ -42,18 +27,17 @@ export class Store {
     ]);
 
   //queries
-  mapChildren = <T>(id: string, mapper: Func1<Item, T>): T[] => {
-    const items = this.state.items;
-    return items[id].children!.map((id) => mapper(items[id]));
-  };
+  mapChildren = <T>(id: string, mapper: Func1<Item, T>): T[] =>
+    items.getChildren(this.state.items, id).map(mapper);
 
-  isOpen = (id: string) => !!this.state.items[id].isOpen;
-  isLoading = (id: string) => !!this.state.items[id].isLoading;
+  isOpen = (id: string) => items.isOpen(this.state.items, id);
+  isLoading = (id: string) => items.isLoading(this.state.items, id);
 
   forEachOpenChild = (id: string, action: Action<Item>) =>
     items.traverseOpenChildren(this.state.items, id, action);
 
-  hasSearchResults = () => !!this.state.items["SEARCH"].children;
+  hasSearchResults = () =>
+    items.getChildren(this.state.items, "SEARCH").length > 0;
 
   isSearchInputFocused = () =>
     this.state.uiState.areaFocused === "search-input";
@@ -94,3 +78,49 @@ export class Store {
     this.dispatch(events);
   };
 }
+
+const initialItems = (): Items => ({
+  HOME: {
+    id: "HOME",
+    title: "Home",
+    children: ["s1", "s2", "s3"],
+    type: "folder",
+  },
+  SEARCH: {
+    id: "SEARCH",
+    title: "Home",
+    children: [],
+    type: "search",
+    searchTerm: "",
+  },
+  s1: {
+    id: "s1",
+    // image: "https://i.ytimg.com/vi/5z6IKnYXqFM/mqdefault.jpg",
+    // channelTitle: "The Psychedelic Muse",
+    // channelId: "UCAepXw94EhaO0CZV9f5D3fQ",
+    videoId: "5z6IKnYXqFM",
+    title: "Sync24 - Comfortable Void [Full Album]",
+    type: "YTvideo",
+  },
+  s2: {
+    id: "s2",
+    image: "https://i.ytimg.com/vi/c117hJ9dje8/mqdefault.jpg",
+    // itemId: "PLt4Ljtd00HDDGp7zThOo9bo6icToNWC2O",
+    title: "Sync24 - Acidious - 2020",
+    // channelTitle: "A. Fedorov",
+    // channelId: "UCJsgvVDwBGl__jTJ7uYwl0g",
+    type: "YTplaylist",
+    children: [],
+    playlistId: "PLt4Ljtd00HDDGp7zThOo9bo6icToNWC2O",
+  },
+  s3: {
+    id: "s3",
+    // image: "https://i.ytimg.com/vi/8ONz3_vjJIY/mqdefault.jpg",
+    // channelTitle: "The Psychedelic Muse",
+    // channelId: "UCAepXw94EhaO0CZV9f5D3fQ",
+    // itemId: "8ONz3_vjJIY",
+    title: "Sync24 - Omnious [Full Album]",
+    type: "YTvideo",
+    videoId: "8ONz3_vjJIY",
+  },
+});

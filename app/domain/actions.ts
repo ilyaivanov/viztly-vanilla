@@ -12,13 +12,13 @@ const onRightArrow: ActionHandler = (state) => {
   const isNeededToBeLoaded = items.isNeededToBeLoaded(state.items, selectedId);
 
   const isLoading = items.isLoading(state.items, selectedId);
-
+  isNeededToBeLoaded; //?
   if (isNeededToBeLoaded) {
     return merge(open(state, selectedId), startLoading(state, selectedId));
   } else if (isOpen && !isEmpty)
     return changeSelectionOnFocusedArea(
       state,
-      items.getChildren(state.items, selectedId)[0]
+      items.getChildrenIds(state.items, selectedId)[0]
     );
   else if (!isEmpty || isLoading) return open(state, selectedId);
   else return noop(state);
@@ -59,7 +59,8 @@ const focusOn = (state: AppState, area: FocusArea): ActionResult => {
   if (area === "main")
     events = [{ type: "item-select", payload: state.mainSelectedItem }];
   else if (area == "search") {
-    if (!state.items["SEARCH"].children) {
+    const children = items.getChildrenIds(state.items, "SEARCH");
+    if (children.length === 0) {
       events = [
         { type: "item-select", payload: "search-input" },
         { type: "search-tab-visibility-change" },
@@ -137,13 +138,16 @@ const searchForVideos = (state: AppState): ActionResult => {
   };
 };
 
-const searchResultsDone = (state: AppState, items: Item[]): ActionResult => {
+const searchResultsDone = (
+  state: AppState,
+  itemsFound: Item[]
+): ActionResult => {
   // commands are ignored deliberately, I'm not showing SEARCH node
-  const { nextState } = itemsLoaded(state, "SEARCH", items);
+  const { nextState } = itemsLoaded(state, "SEARCH", itemsFound);
   return {
     nextState: {
       ...nextState,
-      searchSelectedItem: nextState.items["SEARCH"].children![0],
+      searchSelectedItem: items.getChildrenIds(nextState.items, "SEARCH")[0],
     },
     events: [{ type: "search-loading" }],
   };

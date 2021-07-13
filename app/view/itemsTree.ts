@@ -109,7 +109,7 @@ export class ItemView {
 }
 
 export const viewTree = (id: string) =>
-  dom.fragment(store.mapChildren(id, ItemView.view));
+  dom.fragment(store.mapChildren(id, (item) => ItemView.view(item)));
 
 style.class("item-title_selected", {
   fontWeight: "bold",

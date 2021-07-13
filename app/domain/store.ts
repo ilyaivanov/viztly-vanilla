@@ -38,6 +38,9 @@ export class Store {
   isPlaylist = (item: Item) => items.isPlaylist(item);
   isVideo = (item: Item) => items.isVideo(item);
   isChannel = (item: Item) => items.isChannel(item);
+  isContainer = (item: Item) => items.isContainer(item);
+  isEmpty = (item: Item) => items.isEmpty(this.state.items, item.id);
+  isNeededToBeLoaded = (item: Item) => items.isNeededToBeLoaded(item);
 
   forEachOpenChild = (id: string, action: Action<Item>) =>
     items.traverseOpenChildren(this.state.items, id, action);

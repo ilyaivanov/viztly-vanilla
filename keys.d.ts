@@ -7,6 +7,8 @@ type ClassName =
   | "item-title"
   | "item-done"
   | "item-row"
+  | "item-row-container"
+  | "item-row_selected"
   | "item-children-border"
   | "item-row-children"
   | "item-icon-svg"
@@ -17,7 +19,6 @@ type ClassName =
   | "item-icon-circle_hidden"
   | "item-icon-image_square"
   | "item-icon-image_circle"
-  | "item-title_selected"
   | "item-children"
   | "keyboard-label";
 

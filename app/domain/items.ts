@@ -154,12 +154,11 @@ export const isLoading = (items: Items, id: string): boolean => {
   return isRemoteFolder(item) ? !!item.isLoading : false;
 };
 
-export const isNeededToBeLoaded = (items: Items, id: string): boolean => {
-  const item = items[id];
-  return isRemoteFolder(item)
-    ? !item.isLoading && item.children.length === 0
-    : false;
-};
+export const isNeededToBeLoaded = (item: Item): boolean =>
+  isRemoteFolder(item) ? !item.isLoading && item.children.length === 0 : false;
+
+export const isEmpty = (items: Items, itemId: string) =>
+  getChildrenIds(items, itemId).length === 0;
 
 export const hasImage = (item: Item): boolean =>
   "image" in item || "videoId" in item;
@@ -184,7 +183,7 @@ export const isRemoteFolder = (
 
 //this predicate is ugly as my freaking bottom
 //evidence that Item types needs some rethinking
-const isContainer = (
+export const isContainer = (
   item: Item
 ): item is YoutubePlaylist | YoutubeChannel | Folder | SearchContainer =>
   item.type != "YTvideo";

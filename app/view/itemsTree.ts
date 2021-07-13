@@ -14,6 +14,7 @@ export class ItemView {
     this.title = dom.div({
       children: [this.icon.el, dom.span({ text: title })],
       classNames: ["item-row", levels.rowForLevel(level)],
+      classMap: { "item-row-container": store.isContainer(item) },
     });
     this.el = dom.div({ children: [this.title] });
 
@@ -25,12 +26,12 @@ export class ItemView {
   }
 
   select = () => {
-    dom.addClass(this.title, "item-title_selected");
+    dom.addClass(this.title, "item-row_selected");
     this.icon.select();
   };
 
   unselect = () => {
-    dom.removeClass(this.title, "item-title_selected");
+    dom.removeClass(this.title, "item-row_selected");
     this.icon.unselect();
   };
 
@@ -111,19 +112,20 @@ export class ItemView {
 export const viewTree = (id: string) =>
   dom.fragment(store.mapChildren(id, (item) => ItemView.view(item)));
 
-style.class("item-title_selected", {
-  fontWeight: "bold",
-  color: "#9CDCFE",
+style.class("item-row_selected", {
+  backgroundColor: "#37373D",
 });
 
 style.class("item-row", {
   display: "flex",
   alignItems: "center",
   cursor: "pointer",
-
+  color: "#DDDDDD",
   paddingTop: spacings.rowVecticalPadding,
   paddingBottom: spacings.rowVecticalPadding,
 });
+
+style.class("item-row-container", { fontWeight: "bold" });
 
 style.class("item-row-children", {
   overflow: "hidden",

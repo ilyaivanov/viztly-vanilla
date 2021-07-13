@@ -9,7 +9,7 @@ const onRightArrow: ActionHandler = (state) => {
 
   const isOpen = items.isOpen(state.items, selectedId);
 
-  const isNeededToBeLoaded = items.isNeededToBeLoaded(state.items, selectedId);
+  const isNeededToBeLoaded = items.isNeededToBeLoaded(state.items[selectedId]);
 
   const isLoading = items.isLoading(state.items, selectedId);
   isNeededToBeLoaded; //?

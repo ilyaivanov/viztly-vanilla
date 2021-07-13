@@ -65,7 +65,10 @@ export class ItemIcon {
     dom.removeClass(this.chevron, "item-icon-chevron_open");
   };
 
-  select = () => dom.addClass(this.chevron, "item-icon-chevron_visible");
+  select = () => {
+    if (!store.isEmpty(this.item) || store.isNeededToBeLoaded(this.item))
+      dom.addClass(this.chevron, "item-icon-chevron_visible");
+  };
 
   unselect = () => dom.removeClass(this.chevron, "item-icon-chevron_visible");
 
@@ -100,7 +103,10 @@ style.class("item-icon-chevron", {
   userSelect: "none",
   pointerEvents: "none",
   onHover: { color: "currentColor" },
-  transition: css.transition({ transform: timings.itemCollapse }),
+  transition: css.transition({
+    transform: timings.itemCollapse,
+    opacity: timings.itemCollapse,
+  }),
 });
 
 style.class("item-icon-chevron_open", {

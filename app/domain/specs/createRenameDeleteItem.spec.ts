@@ -21,5 +21,21 @@ it("having two folder removing second one should place focus on first and remove
   expectEqual(nextState, expectedState);
 });
 
+it("having two folder removing first one should place focus on second", () => {
+  const state = buildState(`
+    HOME
+        first -mainSelected
+        second 
+    `);
+
+  const expectedState = buildState(`
+    HOME
+        second -mainSelected
+`);
+  const { nextState } = actions.removeSelected(state);
+
+  expectEqual(nextState, expectedState);
+});
+
 const expectEqual = <T>(actual: T, expected: T) =>
   expect(actual).toEqual(expected);

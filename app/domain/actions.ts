@@ -207,8 +207,9 @@ const open = (state: AppState, itemId: string): ActionResult => ({
 
 const removeSelected = (state: AppState): ActionResult => {
   const itemId = getItemSelected(state);
-  //TODO: item above might not exist
-  const prevItem = items.getItemAbove(state.items, itemId)!;
+  let itemToFocus = items.getItemAbove(state.items, itemId);
+  if (!itemToFocus) itemToFocus = items.getNextBelow(state.items, itemId);
+
   const parentId = items.getParentId(state.items, itemId);
   const parent = state.items[parentId];
 
@@ -217,11 +218,13 @@ const removeSelected = (state: AppState): ActionResult => {
   if (items.isContainer(parent))
     parent.children = parent.children.filter((id) => id != itemId);
 
-  const { nextState } = changeSelectionOnFocusedArea(state, prevItem);
+  let nextState: AppState = state;
+  if (itemToFocus)
+    nextState = changeSelectionOnFocusedArea(state, itemToFocus).nextState;
   return {
-    nextState,
+    nextState: nextState,
     events: [
-      { type: "item-select", payload: prevItem },
+      { type: "item-select", payload: itemToFocus! },
       { type: "item-removed", payload: itemId },
     ],
   };

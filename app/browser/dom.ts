@@ -1,4 +1,4 @@
-const appendChildren = (elem: Element, children: Node[]) =>
+export const appendChildren = (elem: Element, children: Node[]) =>
   children.forEach((child) => elem.appendChild(child));
 
 export const removeAllChildren = (elem: Element) => {

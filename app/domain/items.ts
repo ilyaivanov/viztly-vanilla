@@ -161,12 +161,25 @@ export const isNeededToBeLoaded = (items: Items, id: string): boolean => {
     : false;
 };
 
-const isVideo = (item: Item): item is YoutubeVideo => item.type === "YTvideo";
-const isPlaylist = (item: Item): item is YoutubePlaylist =>
+export const hasImage = (item: Item): boolean =>
+  "image" in item || "videoId" in item;
+
+export const getPreviewImage = (item: Item): string => {
+  if ("videoId" in item)
+    return `https://i.ytimg.com/vi/${item.videoId}/mqdefault.jpg`;
+  else if ("image" in item) return item.image;
+  else return "";
+};
+
+export const isVideo = (item: Item): item is YoutubeVideo =>
+  item.type === "YTvideo";
+export const isPlaylist = (item: Item): item is YoutubePlaylist =>
   item.type === "YTplaylist";
-const isChannel = (item: Item): item is YoutubeChannel =>
+export const isChannel = (item: Item): item is YoutubeChannel =>
   item.type === "YTchannel";
-const isRemoteFolder = (item: Item): item is YoutubePlaylist | YoutubeChannel =>
+export const isRemoteFolder = (
+  item: Item
+): item is YoutubePlaylist | YoutubeChannel =>
   item.type === "YTchannel" || item.type === "YTplaylist";
 
 //this predicate is ugly as my freaking bottom

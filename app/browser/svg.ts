@@ -14,7 +14,7 @@ export interface SvgProps extends BaseSvg {
   style?: SvgInlineStyles;
   viewBox: string;
   fill?: string;
-  children: (SVGElement | undefined)[];
+  children?: (SVGElement | undefined)[];
 }
 export const svg = (props: SvgProps): SVGSVGElement =>
   dom.assignClasses(

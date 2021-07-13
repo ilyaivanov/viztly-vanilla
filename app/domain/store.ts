@@ -11,7 +11,7 @@ export class Store {
   constructor() {
     this.state = {
       items: initialItems(),
-      mainSelectedItem: "i8SE2by3",
+      mainSelectedItem: "s1",
       searchSelectedItem: "",
       uiState: {
         areaFocused: "main",
@@ -31,7 +31,13 @@ export class Store {
     items.getChildren(this.state.items, id).map(mapper);
 
   isOpen = (id: string) => items.isOpen(this.state.items, id);
+  hasImage = (id: string) => items.hasImage(this.state.items[id]);
+  getPreviewImage = (id: string) => items.getPreviewImage(this.state.items[id]);
   isLoading = (id: string) => items.isLoading(this.state.items, id);
+
+  isPlaylist = (item: Item) => items.isPlaylist(item);
+  isVideo = (item: Item) => items.isVideo(item);
+  isChannel = (item: Item) => items.isChannel(item);
 
   forEachOpenChild = (id: string, action: Action<Item>) =>
     items.traverseOpenChildren(this.state.items, id, action);

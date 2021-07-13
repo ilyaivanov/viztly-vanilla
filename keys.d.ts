@@ -15,6 +15,8 @@ type ClassName =
   | "item-icon-chevron_open"
   | "item-icon-chevron_visible"
   | "item-icon-circle_hidden"
+  | "item-icon-image_square"
+  | "item-icon-image_circle"
   | "item-title_selected"
   | "item-children"
   | "keyboard-label";

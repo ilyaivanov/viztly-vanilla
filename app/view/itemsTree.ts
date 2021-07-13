@@ -63,6 +63,9 @@ export class ItemView {
       this.el.remove();
     });
 
+  insertAfter = (item: Item) =>
+    this.el.insertAdjacentElement("afterend", new ItemView(item).el);
+
   renameInput?: HTMLInputElement;
   startRename = () => {
     if (!this.renameInput) {
@@ -76,8 +79,11 @@ export class ItemView {
             e.code === "Escape" ||
             e.code == "ArrowDown" ||
             e.code == "ArrowUp"
-          )
+          ) {
             this.finishRename();
+            //prevent item creation
+            if (e.code === "Enter") e.stopPropagation();
+          }
         },
       });
       this.title.appendChild(this.renameInput);

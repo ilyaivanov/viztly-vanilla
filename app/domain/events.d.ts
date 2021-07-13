@@ -9,6 +9,7 @@ type DomainEvent =
   | EventWithPayload<"item-open", string>
   | EventWithPayload<"item-close", string>
   | EventWithPayload<"item-startRename", string>
+  | EventWithPayload<"item-insertAfter", { itemId: string; folder: Item }>
   | EventWithPayload<"item-removed", string>
   | EventWithPayload<"item-select", string>
   | EventWithPayload<"item-loaded", string>

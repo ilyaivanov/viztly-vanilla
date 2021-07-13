@@ -237,6 +237,29 @@ export const startRenameSelectedItem = (state: AppState): ActionResult => {
   };
 };
 
+export const createItemAfterSelected = (state: AppState): ActionResult => {
+  const folder: Folder = {
+    id: Math.random() + "",
+    children: [],
+    title: "New Folder",
+    type: "folder",
+  };
+  const selctedItemId = getItemSelected(state);
+  const inserted: AppState = {
+    ...state,
+    items: items.insertItemAfter(state.items, selctedItemId, folder),
+  };
+  const withSelected = changeSelectionOnFocusedArea(inserted, folder.id);
+  const events: DomainEvent[] = [
+    { type: "item-insertAfter", payload: { itemId: selctedItemId, folder } },
+    { type: "item-startRename", payload: folder.id },
+  ];
+  return {
+    nextState: withSelected.nextState,
+    events: events.concat(withSelected.events),
+  };
+};
+
 const noop = (state: AppState): ActionResult => ({
   nextState: state,
   events: [],
@@ -263,4 +286,5 @@ export default {
   hideSearch,
   removeSelected,
   startRenameSelectedItem,
+  createItemAfterSelected,
 };

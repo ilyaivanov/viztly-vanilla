@@ -10,6 +10,15 @@ export const setChildren = (items: Items, id: string, children: Item[]) => {
   if (item.type !== "YTvideo") item.children = children.map((item) => item.id);
 };
 
+export const insertItemAfter = (items: Items, id: string, item: Item) => {
+  const parentId = getParentId(items, id);
+  const context = getChildrenIds(items, parentId);
+  const index = context.indexOf(id);
+  context.splice(index + 1, 0, item.id);
+  items[item.id] = item;
+  return items;
+};
+
 export const getChildrenIds = (items: Items, id: string): string[] => {
   const item = items[id];
   if ("children" in item) return item.children;
@@ -128,7 +137,7 @@ export const isRoot = (id: string) => roots.has(id);
 
 //helpers
 
-const getContext = (items: Items, id: string): string[] => {
+export const getContext = (items: Items, id: string): string[] => {
   const parentId = getParentId(items, id);
   return getChildrenIds(items, parentId);
 };

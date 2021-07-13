@@ -1,15 +1,22 @@
 import { anim, dom, style } from "../browser";
+import { levels, spacings } from "../designSystem";
 import { glue, store } from "../infra";
+import { ItemIcon } from "./itemIcon";
 
 export class ItemView {
-  el: HTMLLIElement;
-  title: HTMLSpanElement;
+  el: HTMLDivElement;
+  title: HTMLDivElement;
   childrenContainer: HTMLElement | undefined;
-
-  constructor(private item: Item) {
+  icon: ItemIcon;
+  constructor(private item: Item, private level = 0) {
     const { title, id } = item;
-    this.title = dom.span({ text: title });
-    this.el = dom.li({ children: [this.title], id: id });
+    this.icon = new ItemIcon(item);
+    this.title = dom.div({
+      children: [this.icon.el, dom.span({ text: title })],
+      classNames: ["item-row", levels.rowForLevel(level)],
+      classMap: { "item-row-container": store.isContainer(item) },
+    });
+    this.el = dom.div({ children: [this.title] });
 
     if (store.isOpen(id)) {
       this.childrenContainer = this.viewChildren();
@@ -18,8 +25,15 @@ export class ItemView {
     glue.saveView(item.id, this);
   }
 
-  select = () => dom.addClass(this.title, "item-title_selected");
-  unselect = () => dom.removeClass(this.title, "item-title_selected");
+  select = () => {
+    dom.addClass(this.title, "item-row_selected");
+    this.icon.select();
+  };
+
+  unselect = () => {
+    dom.removeClass(this.title, "item-row_selected");
+    this.icon.unselect();
+  };
 
   open = () => {
     if (!anim.revertAnimations(this.childrenContainer)) {
@@ -29,6 +43,7 @@ export class ItemView {
         .expand(this.childrenContainer)
         .addEventListener("finish", this.onChildrenAnimationDone);
     }
+    this.icon.open();
   };
 
   close = () => {
@@ -37,7 +52,14 @@ export class ItemView {
       anim
         .collapse(childEl)
         .addEventListener("finish", this.onChildrenAnimationDone);
+
+    this.icon.close();
   };
+
+  remove = () =>
+    anim.flyAwayAndCollapse(this.el).addEventListener("finish", () => {
+      this.el.remove();
+    });
 
   itemLoaded = () => this.crossFadeIntoLoaded();
 
@@ -61,21 +83,63 @@ export class ItemView {
   };
 
   private viewChildren = () => {
-    const res = document.createElement("div");
-    res.style.overflow = "hidden";
+    const res = dom.div({ className: "item-row-children" });
     if (!store.isLoading(this.item.id)) {
-      dom.setChildren(res, [viewTree(this.item.id)]);
-    } else res.appendChild(dom.span({ text: "Loading..." }));
+      dom.setChildren(
+        res,
+        store
+          .mapChildren(this.item.id, (item) =>
+            ItemView.view(item, this.level + 1)
+          )
+          .concat(this.viewBorder())
+      );
+    } else
+      res.appendChild(
+        dom.span({
+          text: "Loading...",
+          className: levels.rowForLevel(this.level + 1),
+        })
+      );
     return res;
   };
 
-  static view = (item: Item): HTMLLIElement => new ItemView(item).el;
+  private viewBorder = () =>
+    dom.div({
+      classNames: [
+        "item-children-border",
+        levels.childrenBorderForLevel(this.level),
+      ],
+    });
+  static view = (item: Item, level = 0): HTMLDivElement =>
+    new ItemView(item, level).el;
 }
 
 export const viewTree = (id: string) =>
-  dom.ul({ children: store.mapChildren(id, ItemView.view) });
+  dom.fragment(store.mapChildren(id, (item) => ItemView.view(item)));
 
-style.class("item-title_selected", {
-  fontWeight: "bold",
-  color: "#9CDCFE",
+style.class("item-row_selected", {
+  backgroundColor: "#37373D",
+});
+
+style.class("item-row", {
+  display: "flex",
+  alignItems: "center",
+  cursor: "pointer",
+  color: "#DDDDDD",
+  paddingTop: spacings.rowVecticalPadding,
+  paddingBottom: spacings.rowVecticalPadding,
+});
+
+style.class("item-row-container", { fontWeight: "bold" });
+
+style.class("item-row-children", {
+  overflow: "hidden",
+  position: "relative",
+});
+style.class("item-children-border", {
+  position: "absolute",
+  width: 2,
+  top: 0,
+  bottom: 0,
+  backgroundColor: "#4C5155",
 });

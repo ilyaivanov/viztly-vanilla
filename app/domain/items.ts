@@ -1,28 +1,26 @@
-export const getRootItems = (items: Items): Item[] => {
-  const children = items["HOME"].children;
-  if (children) return children.map((id) => items[id]);
-  else return [];
-};
+export const getRootItems = (items: Items): Item[] =>
+  getChildren(items, "HOME");
 
 export const mapRootItems = <T>(items: Items, mapper: (item: Item) => T): T[] =>
   mapChildrenIfOpen(items, "HOME", mapper);
 
-export const getRandomItems = (): Item[] => {
-  const length = Math.floor(Math.random() * 8 + 4);
-  const randomItem = (): Item => ({
-    id: Math.random() + "",
-    title: `Some Item (${Math.floor(Math.random() * 100)})`,
-  });
-  return Array.from(new Array(length)).map(randomItem);
-};
-
 export const setChildren = (items: Items, id: string, children: Item[]) => {
   children.forEach((item) => (items[item.id] = item));
-  items[id].children = children.map((item) => item.id);
+  const item = items[id];
+  if (item.type !== "YTvideo") item.children = children.map((item) => item.id);
 };
 
+export const getChildrenIds = (items: Items, id: string): string[] => {
+  const item = items[id];
+  if ("children" in item) return item.children;
+  return [];
+};
+
+export const getChildren = (items: Items, id: string): Item[] =>
+  getChildrenIds(items, id).map((id) => items[id]);
+
 export function getNextBelow(items: Items, itemId: string): string | undefined {
-  const children = items[itemId].children;
+  const children = getChildrenIds(items, itemId);
   if (isOpen(items, itemId) && children && children.length > 0) {
     return children[0];
   } else {
@@ -56,24 +54,11 @@ export const getItemAbove = (items: Items, id: string): string | undefined => {
   }
 };
 
-export const isOpen = (items: Items, id: string): boolean => !!items[id].isOpen;
-export const isLoading = (items: Items, id: string): boolean =>
-  !!items[id].isLoading;
-
-export const isNeededToBeLoaded = (items: Items, id: string): boolean =>
-  !items[id].isOpen && !items[id].children && !items[id].isLoading;
-
 export const mapChildrenIfOpen = <T>(
   items: Items,
   id: string,
   mapper: (item: Item) => T
-): T[] => {
-  if (isOpen(items, id)) {
-    const children = items[id].children;
-    if (children) return children.map((childId) => mapper(items[childId]));
-    return [];
-  } else return [];
-};
+): T[] => (isOpen(items, id) ? getChildren(items, id).map(mapper) : []);
 
 export const traverseOpenChildren = (
   items: Items,
@@ -84,17 +69,30 @@ export const traverseOpenChildren = (
     children.forEach((id) => {
       action(items[id]);
       if (isOpen(items, id)) {
-        const subchilds = items[id].children;
+        const subchilds = getChildrenIds(items, id);
         if (subchilds) traverseChildren(subchilds);
       }
     });
   };
-  const children = items[itemId].children;
+  const children = getChildrenIds(items, itemId);
   if (children) traverseChildren(children);
 };
 
-export const getChildren = (items: Items, id: string): string[] =>
-  items[id].children || [];
+export const traverseAllChildren = (
+  items: Items,
+  itemId: string,
+  action: Action<Item>
+) => {
+  const traverseChildren = (children: string[]) => {
+    children.forEach((id) => {
+      action(items[id]);
+      const subchilds = getChildrenIds(items, id);
+      if (subchilds) traverseChildren(subchilds);
+    });
+  };
+  const children = getChildrenIds(items, itemId);
+  if (children) traverseChildren(children);
+};
 
 export const assignItem = (
   items: Items,
@@ -112,16 +110,14 @@ export const itemLoaded = (
   children: Item[]
 ): Items => {
   const item = items[id];
-  delete item.isLoading;
-  item.children = children.map((c) => c.id);
-  children.forEach((child) => (items[child.id] = child));
+  if (isRemoteFolder(item)) delete item.isLoading;
+  assignChildren(items, id, children);
   return items;
 };
 
 export const getParentId = (items: Items, id: string): string => {
-  const i = Object.keys(items).find((key) => {
-    const item = items[key];
-    return item.children && item.children.indexOf(id) >= 0;
+  const i = Object.keys(items).find((itemId) => {
+    return getChildrenIds(items, itemId).indexOf(id) >= 0;
   });
 
   return i!;
@@ -134,7 +130,7 @@ export const isRoot = (id: string) => roots.has(id);
 
 const getContext = (items: Items, id: string): string[] => {
   const parentId = getParentId(items, id);
-  return items[parentId].children || [];
+  return getChildrenIds(items, parentId);
 };
 
 const getFollowingItem = (items: Items, id: string): string | undefined => {
@@ -152,8 +148,58 @@ const isLast = (items: Items, id: string): boolean => {
 
 const getLastNestedItem = (items: Items, id: string): string => {
   if (isOpen(items, id) && getChildren(items, id).length > 0) {
-    const children = getChildren(items, id);
+    const children = getChildrenIds(items, id);
     return getLastNestedItem(items, children[children.length - 1]);
   }
   return id;
 };
+
+const assignChildren = (items: Items, id: string, newChildren: Item[]) => {
+  const item = items[id];
+  if (item.type !== "YTvideo") item.children = newChildren.map((c) => c.id);
+  newChildren.forEach((child) => (items[child.id] = child));
+};
+
+export const isOpen = (items: Items, id: string): boolean => {
+  const item = items[id];
+  return isContainer(item) ? !!item.isOpen : false;
+};
+
+export const isLoading = (items: Items, id: string): boolean => {
+  const item = items[id];
+  return isRemoteFolder(item) ? !!item.isLoading : false;
+};
+
+export const isNeededToBeLoaded = (item: Item): boolean =>
+  isRemoteFolder(item) ? !item.isLoading && item.children.length === 0 : false;
+
+export const isEmpty = (items: Items, itemId: string) =>
+  getChildrenIds(items, itemId).length === 0;
+
+export const hasImage = (item: Item): boolean =>
+  "image" in item || "videoId" in item;
+
+export const getPreviewImage = (item: Item): string => {
+  if ("videoId" in item)
+    return `https://i.ytimg.com/vi/${item.videoId}/mqdefault.jpg`;
+  else if ("image" in item) return item.image;
+  else return "";
+};
+
+export const isVideo = (item: Item): item is YoutubeVideo =>
+  item.type === "YTvideo";
+export const isPlaylist = (item: Item): item is YoutubePlaylist =>
+  item.type === "YTplaylist";
+export const isChannel = (item: Item): item is YoutubeChannel =>
+  item.type === "YTchannel";
+export const isRemoteFolder = (
+  item: Item
+): item is YoutubePlaylist | YoutubeChannel =>
+  item.type === "YTchannel" || item.type === "YTplaylist";
+
+//this predicate is ugly as my freaking bottom
+//evidence that Item types needs some rethinking
+export const isContainer = (
+  item: Item
+): item is YoutubePlaylist | YoutubeChannel | Folder | SearchContainer =>
+  item.type != "YTvideo";

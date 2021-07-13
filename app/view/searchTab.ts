@@ -27,7 +27,7 @@ export class SearchTab {
     glue.searchTab = this;
   }
 
-  renderResults = () =>
+  renderResults = (): Node =>
     store.hasSearchResults()
       ? viewTree("SEARCH")
       : dom.span({ text: "No Results" });

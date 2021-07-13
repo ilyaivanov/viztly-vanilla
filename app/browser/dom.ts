@@ -1,4 +1,4 @@
-const appendChildren = (elem: Element, children: Element[]) =>
+export const appendChildren = (elem: Element, children: Node[]) =>
   children.forEach((child) => elem.appendChild(child));
 
 export const removeAllChildren = (elem: Element) => {
@@ -10,13 +10,31 @@ export const setChildren = (elem: Element, children: Element[]) => {
   children.forEach((child) => elem.appendChild(child));
 };
 
-type ClassMap = Record<ClassName, boolean>;
+export const fragment = (children: Element[]) => {
+  const frag = document.createDocumentFragment();
+  children.forEach((child) => frag.appendChild(child));
+  return frag;
+};
 
-export const assignClasses = (elem: Element, map: ClassMap) => {
-  Object.entries(map).map(([className, isSet]) => {
-    if (isSet) elem.classList.add(className);
-    else elem.classList.remove(className);
-  });
+export type ClassMap = Partial<Record<ClassName, boolean>>;
+export type ClassDefinitions = {
+  className?: ClassName;
+  classNames?: ClassName[];
+  classMap?: ClassMap;
+};
+
+export const assignClasses = <T extends Element>(
+  elem: T,
+  classes: ClassDefinitions
+): T => {
+  const { classMap, className, classNames } = classes;
+  if (classMap)
+    Object.entries(classMap).map(([className, isSet]) =>
+      toggleClass(elem, className as ClassName, isSet)
+    );
+  if (className) elem.classList.add(className);
+  if (classNames) classNames.forEach((cs) => elem.classList.add(cs));
+  return elem;
 };
 
 export const addClass = (elem: Element, className: ClassName) =>
@@ -44,24 +62,16 @@ export const ol = ({ children }: { children: Element[] }) => {
 };
 
 type DivProps = {
-  className?: ClassName;
-  classNames?: ClassName[];
-  classMap?: Partial<Record<ClassName, boolean>>;
-  children?: Element[];
+  children?: Node[];
   id?: string;
   onKeyDown?: (e: KeyboardEvent) => void;
-};
+} & ClassDefinitions;
 
 export const div = (props: DivProps) => {
   const elem = document.createElement("div");
 
-  const { className, classNames, classMap, children, id } = props;
-  if (className) elem.classList.add(className);
-  if (classNames) classNames.forEach((cs) => elem.classList.add(cs));
-  if (classMap)
-    Object.entries(classMap).forEach(([cs, isSet]) =>
-      toggleClass(elem, cs as ClassName, isSet)
-    );
+  const { children, id } = props;
+  assignClasses(elem, props);
   if (id) elem.id = id;
   if (children) appendChildren(elem, children);
   return elem;
@@ -83,30 +93,31 @@ export const li = ({ text, id, children, style }: LiProps) => {
   return elem;
 };
 
-interface SpanProps {
+type SpanProps = {
   text: string;
-  children?: Element[];
-}
+} & ClassDefinitions;
 
-export const span = ({ text, children }: SpanProps) => {
+export const span = (props: SpanProps) => {
   const elem = document.createElement("span");
-  elem.textContent = text;
+  assignClasses(elem, props);
+
+  elem.textContent = props.text;
 
   return elem;
 };
 
 type InputProps = {
-  className?: ClassName;
   value?: string;
   placeholder?: string;
   onKeyDown?: (e: KeyboardEvent) => void;
-};
+} & ClassDefinitions;
 
 export const input = (props: InputProps) => {
   const elem = document.createElement("input");
+  assignClasses(elem, props);
   if (props.value) elem.value = props.value;
   if (props.placeholder) elem.placeholder = props.placeholder;
-  if (props.className) elem.classList.add(props.className);
+
   if (props.onKeyDown) elem.addEventListener("keydown", props.onKeyDown);
 
   return elem;

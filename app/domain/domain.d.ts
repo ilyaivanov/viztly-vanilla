@@ -21,13 +21,3 @@ type UIState = {
 };
 
 type FocusArea = "main" | "search" | "search-input";
-
-type Items = Record<string, Item>;
-
-type Item = {
-  id: string;
-  title: string;
-  isOpen?: boolean;
-  isLoading?: boolean;
-  children?: string[];
-};

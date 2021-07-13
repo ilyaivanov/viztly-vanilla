@@ -9,16 +9,16 @@ const onRightArrow: ActionHandler = (state) => {
 
   const isOpen = items.isOpen(state.items, selectedId);
 
-  const isNeededToBeLoaded = items.isNeededToBeLoaded(state.items, selectedId);
+  const isNeededToBeLoaded = items.isNeededToBeLoaded(state.items[selectedId]);
 
   const isLoading = items.isLoading(state.items, selectedId);
-
+  isNeededToBeLoaded; //?
   if (isNeededToBeLoaded) {
     return merge(open(state, selectedId), startLoading(state, selectedId));
   } else if (isOpen && !isEmpty)
     return changeSelectionOnFocusedArea(
       state,
-      items.getChildren(state.items, selectedId)[0]
+      items.getChildrenIds(state.items, selectedId)[0]
     );
   else if (!isEmpty || isLoading) return open(state, selectedId);
   else return noop(state);
@@ -59,7 +59,8 @@ const focusOn = (state: AppState, area: FocusArea): ActionResult => {
   if (area === "main")
     events = [{ type: "item-select", payload: state.mainSelectedItem }];
   else if (area == "search") {
-    if (!state.items["SEARCH"].children) {
+    const children = items.getChildrenIds(state.items, "SEARCH");
+    if (children.length === 0) {
       events = [
         { type: "item-select", payload: "search-input" },
         { type: "search-tab-visibility-change" },
@@ -137,13 +138,16 @@ const searchForVideos = (state: AppState): ActionResult => {
   };
 };
 
-const searchResultsDone = (state: AppState, items: Item[]): ActionResult => {
+const searchResultsDone = (
+  state: AppState,
+  itemsFound: Item[]
+): ActionResult => {
   // commands are ignored deliberately, I'm not showing SEARCH node
-  const { nextState } = itemsLoaded(state, "SEARCH", items);
+  const { nextState } = itemsLoaded(state, "SEARCH", itemsFound);
   return {
     nextState: {
       ...nextState,
-      searchSelectedItem: nextState.items["SEARCH"].children![0],
+      searchSelectedItem: items.getChildrenIds(nextState.items, "SEARCH")[0],
     },
     events: [{ type: "search-loading" }],
   };
@@ -201,6 +205,31 @@ const open = (state: AppState, itemId: string): ActionResult => ({
   events: [{ type: "item-open", payload: itemId }],
 });
 
+const removeSelected = (state: AppState): ActionResult => {
+  const itemId = getItemSelected(state);
+  let itemToFocus = items.getItemAbove(state.items, itemId);
+  if (!itemToFocus) itemToFocus = items.getNextBelow(state.items, itemId);
+
+  const parentId = items.getParentId(state.items, itemId);
+  const parent = state.items[parentId];
+
+  //TODO: remove all children, not only this node
+  delete state.items[itemId];
+  if (items.isContainer(parent))
+    parent.children = parent.children.filter((id) => id != itemId);
+
+  let nextState: AppState = state;
+  if (itemToFocus)
+    nextState = changeSelectionOnFocusedArea(state, itemToFocus).nextState;
+  return {
+    nextState: nextState,
+    events: [
+      { type: "item-select", payload: itemToFocus! },
+      { type: "item-removed", payload: itemId },
+    ],
+  };
+};
+
 const noop = (state: AppState): ActionResult => ({
   nextState: state,
   events: [],
@@ -225,4 +254,5 @@ export default {
   searchResultsDone,
   changeSelectionOnFocusedArea,
   hideSearch,
+  removeSelected,
 };

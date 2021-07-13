@@ -1,8 +1,4 @@
-const animationSpeedCoefficient = 1;
-
-const animationTimings = {
-  expandCollapse: 200,
-};
+import { timings } from "../designSystem/timings";
 
 export const crossFade = (
   container: HTMLElement,
@@ -16,16 +12,14 @@ export const crossFade = (
 
   content
     .animate([{ opacity: 1 }, { opacity: 0 }], {
-      duration:
-        (animationTimings.expandCollapse / 2) * animationSpeedCoefficient,
+      duration: timings.itemExpand / 2,
     })
     .addEventListener("finish", () => {
       content.remove();
       newContent.style.removeProperty("height");
       newContent.style.removeProperty("opacity");
       newContent.animate([{ opacity: 0 }, { opacity: 1 }], {
-        duration:
-          (animationTimings.expandCollapse / 2) * animationSpeedCoefficient,
+        duration: timings.itemExpand / 2,
       });
     });
   container
@@ -34,7 +28,7 @@ export const crossFade = (
         { height: `${currentHeight}px` },
         { height: `${newContent.scrollHeight}px` },
       ],
-      { duration: animationTimings.expandCollapse * animationSpeedCoefficient }
+      { duration: timings.itemExpand }
     )
     .addEventListener("finish", () => {});
 };
@@ -47,9 +41,7 @@ export const collapse = (container: HTMLElement): Animation => {
       { height: `${currentHeight}px`, opacity: 1 },
       { height: `0px`, opacity: 0 },
     ],
-    {
-      duration: animationTimings.expandCollapse * animationSpeedCoefficient,
-    }
+    { duration: timings.itemCollapse }
   );
 };
 export const expand = (container: HTMLElement): Animation => {
@@ -60,21 +52,19 @@ export const expand = (container: HTMLElement): Animation => {
       { height: `0px`, opacity: 0 },
       { height: `${currentHeight}px`, opacity: 1 },
     ],
-    {
-      duration: animationTimings.expandCollapse * animationSpeedCoefficient,
-    }
+    { duration: timings.itemExpand }
   );
 };
 
 export const hideViaOpacity = (container: Element): Animation => {
   return container.animate([{ opacity: 1 }, { opacity: 0 }], {
-    duration: animationTimings.expandCollapse * animationSpeedCoefficient,
+    duration: timings.itemCollapse,
   });
 };
 
 export const showViaOpacity = (container: Element): Animation => {
   return container.animate([{ opacity: 0 }, { opacity: 1 }], {
-    duration: animationTimings.expandCollapse * animationSpeedCoefficient,
+    duration: timings.itemExpand,
   });
 };
 

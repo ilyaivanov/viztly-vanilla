@@ -93,14 +93,15 @@ export const li = ({ text, id, children, style }: LiProps) => {
   return elem;
 };
 
-interface SpanProps {
+type SpanProps = {
   text: string;
-  children?: Element[];
-}
+} & ClassDefinitions;
 
-export const span = ({ text, children }: SpanProps) => {
+export const span = (props: SpanProps) => {
   const elem = document.createElement("span");
-  elem.textContent = text;
+  assignClasses(elem, props);
+
+  elem.textContent = props.text;
 
   return elem;
 };

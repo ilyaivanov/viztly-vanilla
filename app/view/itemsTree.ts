@@ -24,8 +24,15 @@ export class ItemView {
     glue.saveView(item.id, this);
   }
 
-  select = () => dom.addClass(this.title, "item-title_selected");
-  unselect = () => dom.removeClass(this.title, "item-title_selected");
+  select = () => {
+    dom.addClass(this.title, "item-title_selected");
+    this.icon.select();
+  };
+
+  unselect = () => {
+    dom.removeClass(this.title, "item-title_selected");
+    this.icon.unselect();
+  };
 
   open = () => {
     if (!anim.revertAnimations(this.childrenContainer)) {
@@ -80,7 +87,13 @@ export class ItemView {
           )
           .concat(this.viewBorder())
       );
-    } else res.appendChild(dom.span({ text: "Loading..." }));
+    } else
+      res.appendChild(
+        dom.span({
+          text: "Loading...",
+          className: levels.rowForLevel(this.level + 1),
+        })
+      );
     return res;
   };
 

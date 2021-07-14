@@ -60,10 +60,13 @@ export class ItemView {
     this.icon.close();
   };
 
-  remove = () =>
-    anim.flyAwayAndCollapse(this.el).addEventListener("finish", () => {
-      this.el.remove();
-    });
+  remove = (fireanimation?: boolean) => {
+    if (fireanimation)
+      anim.flyAwayAndCollapse(this.el).addEventListener("finish", () => {
+        this.el.remove();
+      });
+    else this.el.remove();
+  };
 
   insertAfter = (item: Item) =>
     dom.insert(this.el, "afterend", ItemView.view(item, this.level));

@@ -15,7 +15,10 @@ it("having two folder removing second one should place focus on first and remove
   const { events, nextState } = actions.removeSelected(state);
   expectEqual(events, [
     { type: "item-select", payload: "first" },
-    { type: "item-removed", payload: "second" },
+    {
+      type: "item-removed",
+      payload: { itemId: "second", fireAnimation: true },
+    },
   ]);
 
   expectEqual(nextState, expectedState);

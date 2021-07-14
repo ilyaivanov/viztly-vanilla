@@ -18,7 +18,8 @@ export class CommandsDispatcher {
       if (event.type == "item-select") this.selectItem(event.payload);
       if (event.type == "item-open") this.open(event.payload);
       if (event.type == "item-close") this.close(event.payload);
-      if (event.type == "item-removed") this.remove(event.payload);
+      if (event.type == "item-removed")
+        this.remove(event.payload.itemId, event.payload.fireAnimation);
       if (event.type == "item-startRename") this.startRename(event.payload);
       if (event.type == "item-mouse-down") {
         this.dnd.onItemMouseDown(event.payload);
@@ -94,7 +95,8 @@ export class CommandsDispatcher {
     this.getView(id).close();
     this.cleanupAllSubviews(id);
   };
-  private remove = (id: string) => this.getView(id)?.remove();
+  private remove = (id: string, fireAnimation?: boolean) =>
+    this.getView(id)?.remove(fireAnimation);
   private startRename = (id: string) => this.getView(id)?.startRename();
 
   private itemLoaded = (id: string) => this.getView(id).itemLoaded();

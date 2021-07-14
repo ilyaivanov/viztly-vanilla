@@ -18,7 +18,10 @@ type DomainEvent =
     >
   | SimpleEvent<"item-mouse-up-during-drag">
   | EventWithPayload<"item-mouse-down", Item>
-  | EventWithPayload<"item-removed", string>
+  | EventWithPayload<
+      "item-removed",
+      { itemId: string; fireAnimation?: boolean }
+    >
   | EventWithPayload<"item-select", string>
   | EventWithPayload<"item-loaded", string>
   | EventWithPayload<"item-start-loading", string>;

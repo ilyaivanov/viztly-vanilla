@@ -225,7 +225,7 @@ const removeSelected = (state: AppState): ActionResult => {
     nextState: nextState,
     events: [
       { type: "item-select", payload: itemToFocus! },
-      { type: "item-removed", payload: itemId },
+      { type: "item-removed", payload: { itemId, fireAnimation: true } },
     ],
   };
 };
@@ -261,7 +261,13 @@ export const drop = (state: AppState, drop: DropDescription): ActionResult => {
       ...state,
       items: newItems,
     },
-    events: [{ type: "item-removed", payload: drop.itemOver }, viewEvent],
+    events: [
+      {
+        type: "item-removed",
+        payload: { itemId: drop.itemOver, fireAnimation: false },
+      },
+      viewEvent,
+    ],
   };
 };
 

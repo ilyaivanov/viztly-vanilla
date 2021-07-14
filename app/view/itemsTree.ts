@@ -9,9 +9,11 @@ export class ItemView {
   titleText: HTMLSpanElement;
   childrenContainer: HTMLElement | undefined;
   icon: ItemIcon;
-  constructor(private item: Item, private level = 0) {
+  constructor(public item: Item, public level: number) {
     const { title, id } = item;
-    this.icon = new ItemIcon(item);
+    this.icon = new ItemIcon(item, {
+      onMouseDown: (e) => store.onMouseDown(this.item),
+    });
     this.titleText = dom.span({ text: title });
     this.title = dom.div({
       children: [this.icon.el, this.titleText],
@@ -64,7 +66,15 @@ export class ItemView {
     });
 
   insertAfter = (item: Item) =>
-    this.el.insertAdjacentElement("afterend", new ItemView(item).el);
+    dom.insert(this.el, "afterend", ItemView.view(item, this.level));
+
+  insertBefore = (item: Item) =>
+    dom.insert(this.el, "beforebegin", ItemView.view(item, this.level));
+
+  insertInside = (item: Item) => {
+    if (this.childrenContainer)
+      dom.insert(this.el, "afterbegin", ItemView.view(item, this.level + 1));
+  };
 
   renameInput?: HTMLInputElement;
   startRename = () => {
@@ -105,6 +115,14 @@ export class ItemView {
   };
 
   itemLoaded = () => this.crossFadeIntoLoaded();
+
+  startListeningToMouseOverEvents = () =>
+    this.title.addEventListener("mousemove", this.onMouseOver);
+
+  stopListeningToMouseOverEvents = () =>
+    this.title.removeEventListener("mousemove", this.onMouseOver);
+
+  onMouseOver = (e: MouseEvent) => store.onMouseOverDuringDrag(this.item, e);
 
   private crossFadeIntoLoaded = () => {
     if (store.isOpen(this.item.id)) {
@@ -153,12 +171,12 @@ export class ItemView {
         levels.childrenBorderForLevel(this.level),
       ],
     });
-  static view = (item: Item, level = 0): HTMLDivElement =>
+  static view = (item: Item, level: number): HTMLDivElement =>
     new ItemView(item, level).el;
 }
 
 export const viewTree = (id: string) =>
-  dom.fragment(store.mapChildren(id, (item) => ItemView.view(item)));
+  dom.fragment(store.mapChildren(id, (item) => ItemView.view(item, 0)));
 
 style.class("item-row_selected", {
   backgroundColor: "#37373D",

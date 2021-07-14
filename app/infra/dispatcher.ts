@@ -1,5 +1,6 @@
 import { findVideos, loadPlaylistItems } from "../api/youtube";
 import { Store } from "../domain/store";
+import Dnd from "../view/dnd";
 import { ItemView } from "../view/itemsTree";
 import { SearchTab } from "../view/searchTab";
 
@@ -19,8 +20,27 @@ export class CommandsDispatcher {
       if (event.type == "item-close") this.close(event.payload);
       if (event.type == "item-removed") this.remove(event.payload);
       if (event.type == "item-startRename") this.startRename(event.payload);
+      if (event.type == "item-mouse-down") {
+        this.dnd.onItemMouseDown(event.payload);
+        this.allViewsAction((view) => view.startListeningToMouseOverEvents());
+      }
+      if (event.type == "item-mouse-move-during-drag")
+        this.dnd.onItemMouseMoveOver(event.payload.itemUnder, event.payload.e);
+      if (event.type == "item-mouse-up-during-drag") {
+        this.allViewsAction((view) => view.stopListeningToMouseOverEvents());
+      }
       if (event.type == "item-insertAfter")
-        this.insertAfter(event.payload.itemId, event.payload.folder);
+        this.viewAction(event.payload.itemId, (view) =>
+          view.insertAfter(event.payload.folder)
+        );
+      if (event.type == "item-insertBefore")
+        this.viewAction(event.payload.itemId, (view) =>
+          view.insertBefore(event.payload.folder)
+        );
+      if (event.type == "item-insertInside")
+        this.viewAction(event.payload.itemId, (view) =>
+          view.insertInside(event.payload.folder)
+        );
       if (event.type == "item-loaded") this.itemLoaded(event.payload);
       if (event.type == "item-start-loading") {
         loadPlaylistItems().then((items) =>
@@ -78,9 +98,15 @@ export class CommandsDispatcher {
   private startRename = (id: string) => this.getView(id)?.startRename();
 
   private itemLoaded = (id: string) => this.getView(id).itemLoaded();
+
   private insertAfter = (id: string, item: Item) =>
     this.getView(id).insertAfter(item);
 
+  private viewAction = (id: string, func: Action<ItemView>) =>
+    func(this.getView(id));
+
+  private allViewsAction = (func: Action<ItemView>) =>
+    Object.values(this.itemViews).forEach(func);
   private getView = (id: string) => this.itemViews[id];
 
   //searchTab
@@ -88,4 +114,7 @@ export class CommandsDispatcher {
 
   private cleanupAllSubviews = (itemId: string) =>
     this.store.forEachOpenChild(itemId, (item) => this.removeView(item.id));
+
+  //dnd
+  dnd!: Dnd;
 }

@@ -11,7 +11,7 @@ export class ItemIcon {
   innerCircle: SVGElement;
 
   chevron: SVGElement;
-  constructor(private item: Item) {
+  constructor(private item: Item, props?: { onMouseDown: Action<MouseEvent> }) {
     this.outerCircle = svg.circle({
       cx: iconSize / 2,
       cy: iconSize / 2,
@@ -34,6 +34,7 @@ export class ItemIcon {
     const itemIconContainer = svg.svg({
       className: "item-icon-svg",
       viewBox: `0 0 ${iconSize} ${iconSize}`,
+      onMouseDown: props?.onMouseDown,
     });
 
     if (store.hasImage(item.id)) {

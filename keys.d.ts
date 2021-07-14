@@ -23,6 +23,10 @@ type ClassName =
   | "item-icon-image_square"
   | "item-icon-image_circle"
   | "item-children"
+  //DND
+  | "item-dragAvatar"
+  | "item-dragDestinationLine"
+  | "item-dragDestinationBulp"
   | "keyboard-label";
 
 type ElementId = string;

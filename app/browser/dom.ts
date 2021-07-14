@@ -1,3 +1,9 @@
+export const insert = (
+  elem: Element,
+  target: InsertPosition,
+  elemToInsert: Element
+) => elem.insertAdjacentElement(target, elemToInsert);
+
 export const appendChildren = (elem: Element, children: Node[]) =>
   children.forEach((child) => elem.appendChild(child));
 

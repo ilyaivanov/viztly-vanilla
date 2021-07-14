@@ -237,6 +237,34 @@ export const startRenameSelectedItem = (state: AppState): ActionResult => {
   };
 };
 
+export const drop = (state: AppState, drop: DropDescription): ActionResult => {
+  const itemOver = state.items[drop.itemOver];
+  const context = items.getContext(state.items, drop.itemOver);
+  const index = context.indexOf(drop.itemOver);
+  context.splice(index, 1);
+  const newItems =
+    drop.placement == "after"
+      ? items.insertItemAfter(state.items, drop.itemUnder, itemOver)
+      : drop.placement == "before"
+      ? items.insertItemBefore(state.items, drop.itemUnder, itemOver)
+      : items.insertItemInside(state.items, drop.itemUnder, itemOver);
+
+  const payload = { itemId: drop.itemUnder, folder: itemOver };
+  const viewEvent: DomainEvent =
+    drop.placement == "after"
+      ? { type: "item-insertAfter", payload }
+      : drop.placement == "before"
+      ? { type: "item-insertBefore", payload }
+      : { type: "item-insertInside", payload };
+  return {
+    nextState: {
+      ...state,
+      items: newItems,
+    },
+    events: [{ type: "item-removed", payload: drop.itemOver }, viewEvent],
+  };
+};
+
 export const createItemAfterSelected = (state: AppState): ActionResult => {
   const folder: Folder = {
     id: Math.random() + "",
@@ -287,4 +315,5 @@ export default {
   removeSelected,
   startRenameSelectedItem,
   createItemAfterSelected,
+  drop,
 };

@@ -10,15 +10,6 @@ export const setChildren = (items: Items, id: string, children: Item[]) => {
   if (item.type !== "YTvideo") item.children = children.map((item) => item.id);
 };
 
-export const insertItemAfter = (items: Items, id: string, item: Item) => {
-  const parentId = getParentId(items, id);
-  const context = getChildrenIds(items, parentId);
-  const index = context.indexOf(id);
-  context.splice(index + 1, 0, item.id);
-  items[item.id] = item;
-  return items;
-};
-
 export const getChildrenIds = (items: Items, id: string): string[] => {
   const item = items[id];
   if ("children" in item) return item.children;
@@ -37,7 +28,7 @@ export function getNextBelow(items: Items, itemId: string): string | undefined {
     if (followingItem) {
       return followingItem;
     } else {
-      let parentId = getParentId(items, itemId); //?
+      let parentId = getParentId(items, itemId);
       while (!isRoot(parentId) && parentId && isLast(items, parentId)) {
         parentId = getParentId(items, parentId);
       }
@@ -103,6 +94,30 @@ export const traverseAllChildren = (
   if (children) traverseChildren(children);
 };
 
+export const insertItemAfter = (items: Items, id: string, item: Item) => {
+  const context = getContext(items, id);
+  const index = context.indexOf(id);
+
+  context.splice(index + 1, 0, item.id);
+  items[item.id] = item;
+  return items;
+};
+export const insertItemBefore = (items: Items, id: string, item: Item) => {
+  const context = getContext(items, id);
+  const index = context.indexOf(id);
+
+  context.splice(index, 0, item.id);
+  items[item.id] = item;
+  return items;
+};
+export const insertItemInside = (items: Items, id: string, item: Item) => {
+  const itemToInsertInside = items[id];
+  if (!isVideo(itemToInsertInside)) {
+    itemToInsertInside.children = [item.id].concat(itemToInsertInside.children);
+  }
+  items[item.id] = item;
+  return items;
+};
 export const assignItem = (
   items: Items,
   id: string,

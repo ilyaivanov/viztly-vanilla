@@ -21,3 +21,10 @@ type UIState = {
 };
 
 type FocusArea = "main" | "search" | "search-input";
+
+type DropPlacement = "before" | "after" | "inside";
+type DropDescription = {
+  itemUnder: string;
+  itemOver: string;
+  placement: DropPlacement;
+};

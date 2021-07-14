@@ -30,5 +30,8 @@ export class KeyboardShortcuts {
       store.removeSelected();
     if (e.code === "F2") store.startRenameSelectedItem();
     if (e.code === "Enter") store.createItemAfterSelected();
+    if (e.code === "Tab") {
+      e.preventDefault();
+    }
   };
 }

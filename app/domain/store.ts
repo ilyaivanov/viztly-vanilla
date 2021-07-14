@@ -27,6 +27,7 @@ export class Store {
     ]);
 
   //queries
+  getItem = (id: string): Item => this.state.items[id];
   mapChildren = <T>(id: string, mapper: Func1<Item, T>): T[] =>
     items.getChildren(this.state.items, id).map(mapper);
 
@@ -86,6 +87,33 @@ export class Store {
 
   searchDone = (items: Item[]) =>
     this.performAction((state) => actions.searchResultsDone(state, items));
+
+  //DND
+  onMouseDown = (item: Item) => {
+    this.performAction(() => ({
+      nextState: this.state,
+      events: [{ type: "item-mouse-down", payload: item }],
+    }));
+  };
+
+  onMouseOverDuringDrag = (itemUnder: Item, e: MouseEvent) => {
+    this.performAction(() => ({
+      nextState: this.state,
+      events: [
+        { type: "item-mouse-move-during-drag", payload: { itemUnder, e } },
+      ],
+    }));
+  };
+
+  dropItem = (dropDef: DropDescription) =>
+    this.performAction((state) => actions.drop(state, dropDef));
+
+  mouseUp = () => {
+    this.performAction(() => ({
+      nextState: this.state,
+      events: [{ type: "item-mouse-up-during-drag" }],
+    }));
+  };
 
   private performAction = (action: Func1<AppState, ActionResult>) => {
     const { events, nextState } = action(this.state);

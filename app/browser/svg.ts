@@ -8,6 +8,7 @@ type ClassDefinitions = {
 
 type SvgEvents = {
   onMouseDown?: Action<MouseEvent>;
+  onClick?: Action<MouseEvent>;
 };
 type BaseSvg = ClassDefinitions & SvgEvents;
 type SvgInlineStyles = Pick<Styles, "backgroundImage">;
@@ -70,6 +71,7 @@ export const path = (props: PathProps) =>
 
 const assignEvents = (svg: SVGSVGElement, props: SvgEvents) => {
   if (props.onMouseDown) svg.addEventListener("mousedown", props.onMouseDown);
+  if (props.onClick) svg.addEventListener("click", props.onClick);
   return svg;
 };
 const svgAttributesIgnored: Record<string, boolean> = {

@@ -67,17 +67,22 @@ export const ol = ({ children }: { children: Element[] }) => {
   return elem;
 };
 
+type Events = {
+  onKeyDown?: (e: KeyboardEvent) => void;
+  onClick?: (e: MouseEvent) => void;
+};
 type DivProps = {
   children?: Node[];
   id?: string;
-  onKeyDown?: (e: KeyboardEvent) => void;
-} & ClassDefinitions;
+} & ClassDefinitions &
+  Events;
 
 export const div = (props: DivProps) => {
   const elem = document.createElement("div");
 
   const { children, id } = props;
   assignClasses(elem, props);
+  assignElementEvents(elem, props);
   if (id) elem.id = id;
   if (children) appendChildren(elem, children);
   return elem;
@@ -115,8 +120,8 @@ export const span = (props: SpanProps) => {
 type InputProps = {
   value?: string;
   placeholder?: string;
-  onKeyDown?: (e: KeyboardEvent) => void;
-} & ClassDefinitions;
+} & ClassDefinitions &
+  Events;
 
 export const input = (props: InputProps) => {
   const elem = document.createElement("input");
@@ -124,7 +129,12 @@ export const input = (props: InputProps) => {
   if (props.value) elem.value = props.value;
   if (props.placeholder) elem.placeholder = props.placeholder;
 
-  if (props.onKeyDown) elem.addEventListener("keydown", props.onKeyDown);
+  assignElementEvents(elem, props);
 
   return elem;
+};
+
+const assignElementEvents = (elem: HTMLElement, props: Events) => {
+  if (props.onKeyDown) elem.addEventListener("keydown", props.onKeyDown);
+  if (props.onClick) elem.addEventListener("click", props.onClick);
 };

@@ -12,7 +12,6 @@ const onRightArrow: ActionHandler = (state) => {
   const isNeededToBeLoaded = items.isNeededToBeLoaded(state.items[selectedId]);
 
   const isLoading = items.isLoading(state.items, selectedId);
-  isNeededToBeLoaded; //?
   if (isNeededToBeLoaded) {
     return merge(open(state, selectedId), startLoading(state, selectedId));
   } else if (isOpen && !isEmpty)
@@ -51,6 +50,16 @@ const onUpArrow: ActionHandler = (state) => {
   if (nextItem && nextItem != selectedId)
     return changeSelectionOnFocusedArea(state, nextItem);
   else return noop(state);
+};
+
+const toggle = (state: AppState, id: string): ActionResult => {
+  if (items.isOpen(state.items, id)) {
+    return close(state, id);
+  } else {
+    if (items.isNeededToBeLoaded(state.items[id]))
+      return merge(open(state, id), startLoading(state, id));
+    else return open(state, id);
+  }
 };
 
 const focusOn = (state: AppState, area: FocusArea): ActionResult => {
@@ -322,4 +331,5 @@ export default {
   startRenameSelectedItem,
   createItemAfterSelected,
   drop,
+  toggle,
 };

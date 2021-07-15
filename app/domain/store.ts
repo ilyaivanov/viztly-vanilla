@@ -60,6 +60,8 @@ export class Store {
   onKeyLeft = () => this.performAction(actions.onLeftArrow);
   onKeyRight = () => this.performAction(actions.onRightArrow);
   onEscape = () => this.performAction(actions.hideSearch);
+  toggle = (id: string) =>
+    this.performAction((state) => actions.toggle(state, id));
   removeSelected = () => this.performAction(actions.removeSelected);
   createItemAfterSelected = () =>
     this.performAction(actions.createItemAfterSelected);
@@ -80,6 +82,11 @@ export class Store {
 
   runDiagnostics = () => this.dispatch([{ type: "run-diagnostics" }]);
 
+  //TODO: make this work when selecting item in search while currently in main
+  select = (itemID: string) =>
+    this.performAction((state) =>
+      actions.changeSelectionOnFocusedArea(state, itemID)
+    );
   searchForVideos = (term: string) => {
     this.performAction(actions.searchForVideos);
     this.dispatch([{ type: "search-find-videos", payload: term }]);

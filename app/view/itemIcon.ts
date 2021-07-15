@@ -28,7 +28,11 @@ export class ItemIcon {
     });
     this.chevron = icons.chevron({
       className: "item-icon-chevron",
-      classMap: { "item-icon-chevron_open": store.isOpen(this.item.id) },
+      classMap: {
+        "item-icon-chevron_open": store.isOpen(this.item.id),
+        "item-icon-chevron_active": this.canBeOpen(),
+      },
+      onClick: () => store.toggle(item.id),
     });
 
     const itemIconContainer = svg.svg({
@@ -67,9 +71,12 @@ export class ItemIcon {
   };
 
   select = () => {
-    if (!store.isEmpty(this.item) || store.isNeededToBeLoaded(this.item))
+    if (this.canBeOpen())
       dom.addClass(this.chevron, "item-icon-chevron_visible");
   };
+
+  canBeOpen = () =>
+    !store.isEmpty(this.item) || store.isNeededToBeLoaded(this.item);
 
   unselect = () => dom.removeClass(this.chevron, "item-icon-chevron_visible");
 
@@ -115,6 +122,11 @@ style.class("item-icon-chevron_open", {
 });
 
 style.class("item-icon-chevron_visible", {
+  opacity: 1,
+  pointerEvents: "all",
+});
+
+style.parentHover("item-row", "item-icon-chevron_active", {
   opacity: 1,
   pointerEvents: "all",
 });

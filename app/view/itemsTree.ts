@@ -19,6 +19,7 @@ export class ItemView {
       children: [this.icon.el, this.titleText],
       classNames: ["item-row", levels.rowForLevel(level)],
       classMap: { "item-row-container": store.isContainer(item) },
+      onClick: () => store.select(item.id),
     });
     this.el = dom.div({ children: [this.title] });
 
@@ -181,10 +182,6 @@ export class ItemView {
 export const viewTree = (id: string) =>
   dom.fragment(store.mapChildren(id, (item) => ItemView.view(item, 0)));
 
-style.class("item-row_selected", {
-  backgroundColor: "#37373D",
-});
-
 style.class("item-row", {
   display: "flex",
   alignItems: "center",
@@ -192,6 +189,13 @@ style.class("item-row", {
   color: "#DDDDDD",
   paddingTop: spacings.rowVecticalPadding,
   paddingBottom: spacings.rowVecticalPadding,
+  onHover: {
+    backgroundColor: "rgb(42,45,46)",
+  },
+});
+
+style.class2("item-row", "item-row_selected", {
+  backgroundColor: "#37373D",
 });
 
 style.class("item-row-container", { fontWeight: "bold" });

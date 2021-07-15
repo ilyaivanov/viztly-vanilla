@@ -16,11 +16,20 @@ export class CommandsDispatcher {
   private dispatchCommands = (events: DomainEvent[]) => {
     events.forEach((event) => {
       if (event.type == "item-select") this.selectItem(event.payload);
-      if (event.type == "item-open") this.open(event.payload);
-      if (event.type == "item-close") this.close(event.payload);
+      if (event.type == "item-open")
+        this.itemViewAction(event.payload, (view) => view.open());
+
+      if (event.type == "item-close")
+        this.itemViewAction(event.payload, (view) => view.close());
+
       if (event.type == "item-removed")
-        this.remove(event.payload.itemId, event.payload.fireAnimation);
-      if (event.type == "item-startRename") this.startRename(event.payload);
+        this.itemViewAction(event.payload.itemId, (view) =>
+          view.remove(event.payload.fireAnimation)
+        );
+
+      if (event.type == "item-startRename")
+        this.itemViewAction(event.payload, (view) => view.startRename());
+
       if (event.type == "item-mouse-down") {
         this.dnd.onItemMouseDown(event.payload);
         this.allViewsAction((view) => view.startListeningToMouseOverEvents());
@@ -31,23 +40,25 @@ export class CommandsDispatcher {
         this.allViewsAction((view) => view.stopListeningToMouseOverEvents());
       }
       if (event.type == "item-insertAfter")
-        this.viewAction(event.payload.itemId, (view) =>
+        this.itemViewAction(event.payload.itemId, (view) =>
           view.insertAfter(event.payload.folder)
         );
       if (event.type == "item-insertBefore")
-        this.viewAction(event.payload.itemId, (view) =>
+        this.itemViewAction(event.payload.itemId, (view) =>
           view.insertBefore(event.payload.folder)
         );
       if (event.type == "item-insertInside")
-        this.viewAction(event.payload.itemId, (view) =>
+        this.itemViewAction(event.payload.itemId, (view) =>
           view.insertInside(event.payload.folder)
         );
-      if (event.type == "item-loaded") this.itemLoaded(event.payload);
+      if (event.type == "item-loaded")
+        this.itemViewAction(event.payload, (view) => view.itemLoaded());
       if (event.type == "item-start-loading") {
         loadPlaylistItems().then((items) =>
           this.store.itemsLoaded(event.payload, items)
         );
       }
+
       if (event.type == "search-find-videos") {
         const term = event.payload;
         findVideos(term).then(this.store.searchDone);
@@ -90,21 +101,7 @@ export class CommandsDispatcher {
     else this.getView(id)?.unselect();
   };
 
-  private open = (id: string) => this.getView(id).open();
-  private close = (id: string) => {
-    this.getView(id).close();
-    this.cleanupAllSubviews(id);
-  };
-  private remove = (id: string, fireAnimation?: boolean) =>
-    this.getView(id)?.remove(fireAnimation);
-  private startRename = (id: string) => this.getView(id)?.startRename();
-
-  private itemLoaded = (id: string) => this.getView(id).itemLoaded();
-
-  private insertAfter = (id: string, item: Item) =>
-    this.getView(id).insertAfter(item);
-
-  private viewAction = (id: string, func: Action<ItemView>) =>
+  private itemViewAction = (id: string, func: Action<ItemView>) =>
     func(this.getView(id));
 
   private allViewsAction = (func: Action<ItemView>) =>

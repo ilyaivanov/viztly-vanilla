@@ -6,7 +6,6 @@ export class KeyboardShortcuts {
   }
 
   handleKey = (e: KeyboardEvent) => {
-    console.log(e.code);
     if (e.code === "ArrowDown") store.onKeyDown();
     if (e.code === "ArrowUp") store.onKeyUp();
     if (e.code === "ArrowLeft") store.onKeyLeft();
@@ -32,6 +31,11 @@ export class KeyboardShortcuts {
     if (e.code === "Enter") store.createItemAfterSelected();
     if (e.code === "Tab") {
       e.preventDefault();
+    }
+
+    if (e.code === "KeyX") {
+      e.preventDefault();
+      store.playCurrentItem();
     }
   };
 }

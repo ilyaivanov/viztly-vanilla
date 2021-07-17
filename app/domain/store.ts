@@ -62,6 +62,7 @@ export class Store {
   onEscape = () => this.performAction(actions.hideSearch);
   toggle = (id: string) =>
     this.performAction((state) => actions.toggle(state, id));
+
   removeSelected = () => this.performAction(actions.removeSelected);
   createItemAfterSelected = () =>
     this.performAction(actions.createItemAfterSelected);
@@ -120,6 +121,11 @@ export class Store {
       nextState: this.state,
       events: [{ type: "item-mouse-up-during-drag" }],
     }));
+  };
+
+  //player
+  playCurrentItem = () => {
+    this.performAction(actions.playCurrentItem);
   };
 
   private performAction = (action: Func1<AppState, ActionResult>) => {

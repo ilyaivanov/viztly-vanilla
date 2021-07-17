@@ -28,6 +28,9 @@ type ClassName =
   | "item-dragAvatar"
   | "item-dragDestinationLine"
   | "item-dragDestinationBulp"
-  | "keyboard-label";
+  | "keyboard-label"
+
+  //
+  | "player";
 
 type ElementId = string;

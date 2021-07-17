@@ -29,6 +29,10 @@ export type ClassDefinitions = {
   classMap?: ClassMap;
 };
 
+type Ref<T> = {
+  ref?: (el: T) => void;
+};
+
 export const assignClasses = <T extends Element>(
   elem: T,
   classes: ClassDefinitions
@@ -75,7 +79,8 @@ type DivProps = {
   children?: Node[];
   id?: string;
 } & ClassDefinitions &
-  Events;
+  Events &
+  Ref<HTMLDivElement>;
 
 export const div = (props: DivProps) => {
   const elem = document.createElement("div");
@@ -85,6 +90,7 @@ export const div = (props: DivProps) => {
   assignElementEvents(elem, props);
   if (id) elem.id = id;
   if (children) appendChildren(elem, children);
+  if (props.ref) props.ref(elem);
   return elem;
 };
 
@@ -106,14 +112,15 @@ export const li = ({ text, id, children, style }: LiProps) => {
 
 type SpanProps = {
   text: string;
-} & ClassDefinitions;
+} & ClassDefinitions &
+  Ref<HTMLSpanElement>;
 
 export const span = (props: SpanProps) => {
   const elem = document.createElement("span");
   assignClasses(elem, props);
 
   elem.textContent = props.text;
-
+  if (props.ref) props.ref(elem);
   return elem;
 };
 

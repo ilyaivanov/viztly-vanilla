@@ -2,6 +2,7 @@ import { findVideos, loadPlaylistItems } from "../api/youtube";
 import { Store } from "../domain/store";
 import Dnd from "../view/dnd";
 import { ItemView } from "../view/itemsTree";
+import { Player } from "../view/player";
 import { SearchTab } from "../view/searchTab";
 
 export class CommandsDispatcher {
@@ -53,6 +54,8 @@ export class CommandsDispatcher {
         );
       if (event.type == "item-loaded")
         this.itemViewAction(event.payload, (view) => view.itemLoaded());
+      console.log(event.type);
+      if (event.type == "item-play") this.playItem(event.payload);
       if (event.type == "item-start-loading") {
         loadPlaylistItems().then((items) =>
           this.store.itemsLoaded(event.payload, items)
@@ -116,4 +119,12 @@ export class CommandsDispatcher {
 
   //dnd
   dnd!: Dnd;
+
+  //player
+  player!: Player;
+  private itemPlayed: Item | undefined;
+  private playItem = (item: Item) => {
+    this.itemPlayed = item;
+    this.player.play(item);
+  };
 }

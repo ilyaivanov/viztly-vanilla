@@ -1,5 +1,6 @@
 import { style, dom } from "../browser";
 import { viewTree } from "./itemsTree";
+import { Player } from "./player";
 import { renderSearchTab } from "./searchTab";
 
 export const renderApp = () =>
@@ -15,6 +16,7 @@ export const renderApp = () =>
         className: "keyboard-label",
         children: [dom.span({ text: "Keyboard Only" })],
       }),
+      new Player().el,
     ],
   });
 

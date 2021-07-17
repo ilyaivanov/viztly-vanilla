@@ -246,6 +246,10 @@ export const startRenameSelectedItem = (state: AppState): ActionResult => {
   };
 };
 
+export const playCurrentItem = (state: AppState): ActionResult => {
+  return play(state, getItemSelected(state));
+};
+
 export const drop = (state: AppState, drop: DropDescription): ActionResult => {
   const itemOver = state.items[drop.itemOver];
   const context = items.getContext(state.items, drop.itemOver);
@@ -302,6 +306,13 @@ export const createItemAfterSelected = (state: AppState): ActionResult => {
     events: events.concat(withSelected.events),
   };
 };
+//player
+const play = (state: AppState, id: string): ActionResult => {
+  return {
+    nextState: state,
+    events: [{ type: "item-play", payload: state.items[id] }],
+  };
+};
 
 const noop = (state: AppState): ActionResult => ({
   nextState: state,
@@ -332,4 +343,5 @@ export default {
   createItemAfterSelected,
   drop,
   toggle,
+  playCurrentItem,
 };

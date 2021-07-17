@@ -2,6 +2,7 @@
 
 type ClassName =
   | "app"
+  | "tab"
   | "main-tab"
   | "search-tab"
   | "search-tab_hidden"
@@ -28,7 +29,6 @@ type ClassName =
   | "item-dragAvatar"
   | "item-dragDestinationLine"
   | "item-dragDestinationBulp"
-  | "keyboard-label"
 
   //
   | "player";

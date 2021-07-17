@@ -54,7 +54,6 @@ export class CommandsDispatcher {
         );
       if (event.type == "item-loaded")
         this.itemViewAction(event.payload, (view) => view.itemLoaded());
-      console.log(event.type);
       if (event.type == "item-play") this.playItem(event.payload);
       if (event.type == "item-start-loading") {
         loadPlaylistItems().then((items) =>

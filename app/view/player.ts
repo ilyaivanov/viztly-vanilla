@@ -24,8 +24,18 @@ export class Player {
 
 style.id(youtubePlayer.youtubeIframe, {
   position: "absolute",
-  bottom: 50,
-  right: 10,
-  width: 300,
-  height: 240,
+  bottom: 69,
+  right: 20,
+  width: 400,
+  height: 150,
+});
+
+style.class("player", {
+  position: "fixed",
+  bottom: 0,
+  height: 49,
+  left: 0,
+  right: 0,
+  backgroundColor: "#252526",
+  boxShadow: "0px 0px 6px 0px black",
 });

@@ -12,7 +12,7 @@ export const setChildren = (items: Items, id: string, children: Item[]) => {
 
 export const getChildrenIds = (items: Items, id: string): string[] => {
   const item = items[id];
-  if ("children" in item) return item.children;
+  if (item && "children" in item) return item.children;
   return [];
 };
 

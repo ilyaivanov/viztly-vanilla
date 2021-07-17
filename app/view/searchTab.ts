@@ -19,7 +19,7 @@ export class SearchTab {
     this.tree = dom.div({ children: [this.renderResults()] });
 
     this.el = dom.div({
-      classNames: ["search-tab"],
+      classNames: ["tab", "search-tab"],
       classMap: { "search-tab_hidden": !store.isSearchVisible() },
       children: [this.input, this.tree],
     });

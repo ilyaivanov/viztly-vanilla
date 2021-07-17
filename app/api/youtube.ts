@@ -1,7 +1,5 @@
-import {
-  loadSearchResults,
-  loadPlaylistItems as loadYoutubePlaylistItems,
-} from "./fakeItemsLoader";
+import { loadPlaylistItems as loadYoutubePlaylistItems } from "./fakeItemsLoader";
+import * as api from "./itemsLoader";
 import { mapReponseItem } from "./mapper";
 
 export const loadPlaylistItems = (): Promise<Item[]> => {
@@ -11,7 +9,8 @@ export const loadPlaylistItems = (): Promise<Item[]> => {
 };
 
 export const findVideos = (term: string): Promise<Item[]> => {
-  return loadSearchResults(term).then((response) =>
-    response.items.map(mapReponseItem)
-  );
+  return api.loadSearchResults(term).then((response) => {
+    console.log(response);
+    return response.items.map(mapReponseItem);
+  });
 };

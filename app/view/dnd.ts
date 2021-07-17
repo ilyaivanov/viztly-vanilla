@@ -79,11 +79,6 @@ export class Dnd {
   drop = () => {
     const { itemBeingDragged, itemViewUnder, dropPlacement } = this;
     if (itemBeingDragged && itemViewUnder && dropPlacement) {
-      console.log({
-        itemOver: itemBeingDragged.id,
-        placement: dropPlacement,
-        itemUnder: itemViewUnder.id,
-      });
       store.dropItem({
         itemOver: itemBeingDragged.id,
         placement: dropPlacement,

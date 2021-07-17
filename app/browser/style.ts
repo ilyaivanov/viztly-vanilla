@@ -116,7 +116,7 @@ export type Styles = Partial<{
   opacity: number;
 
   //sizing
-  height: number | "100vh" | "100%";
+  height: number | "100vh" | "100%" | string;
   width: number | string;
   minWidth: number;
   minHeight: number;
@@ -157,6 +157,7 @@ export type Styles = Partial<{
   //border
   border: string;
   borderLeft: string;
+  borderTop: string;
   outline: string;
   borderRadius: number | "50%";
   borderTopRightRadius: number;

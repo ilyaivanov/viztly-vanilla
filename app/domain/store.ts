@@ -27,6 +27,7 @@ export class Store {
     ]);
 
   //queries
+  getItem = (id: string): Item => this.state.items[id];
   mapChildren = <T>(id: string, mapper: Func1<Item, T>): T[] =>
     items.getChildren(this.state.items, id).map(mapper);
 
@@ -59,6 +60,8 @@ export class Store {
   onKeyLeft = () => this.performAction(actions.onLeftArrow);
   onKeyRight = () => this.performAction(actions.onRightArrow);
   onEscape = () => this.performAction(actions.hideSearch);
+  toggle = (id: string) =>
+    this.performAction((state) => actions.toggle(state, id));
   removeSelected = () => this.performAction(actions.removeSelected);
   createItemAfterSelected = () =>
     this.performAction(actions.createItemAfterSelected);
@@ -79,6 +82,11 @@ export class Store {
 
   runDiagnostics = () => this.dispatch([{ type: "run-diagnostics" }]);
 
+  //TODO: make this work when selecting item in search while currently in main
+  select = (itemID: string) =>
+    this.performAction((state) =>
+      actions.changeSelectionOnFocusedArea(state, itemID)
+    );
   searchForVideos = (term: string) => {
     this.performAction(actions.searchForVideos);
     this.dispatch([{ type: "search-find-videos", payload: term }]);
@@ -86,6 +94,33 @@ export class Store {
 
   searchDone = (items: Item[]) =>
     this.performAction((state) => actions.searchResultsDone(state, items));
+
+  //DND
+  onMouseDown = (item: Item) => {
+    this.performAction(() => ({
+      nextState: this.state,
+      events: [{ type: "item-mouse-down", payload: item }],
+    }));
+  };
+
+  onMouseOverDuringDrag = (itemUnder: Item, e: MouseEvent) => {
+    this.performAction(() => ({
+      nextState: this.state,
+      events: [
+        { type: "item-mouse-move-during-drag", payload: { itemUnder, e } },
+      ],
+    }));
+  };
+
+  dropItem = (dropDef: DropDescription) =>
+    this.performAction((state) => actions.drop(state, dropDef));
+
+  mouseUp = () => {
+    this.performAction(() => ({
+      nextState: this.state,
+      events: [{ type: "item-mouse-up-during-drag" }],
+    }));
+  };
 
   private performAction = (action: Func1<AppState, ActionResult>) => {
     const { events, nextState } = action(this.state);

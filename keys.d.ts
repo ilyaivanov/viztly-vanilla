@@ -19,10 +19,15 @@ type ClassName =
   | "item-icon-chevron"
   | "item-icon-chevron_open"
   | "item-icon-chevron_visible"
+  | "item-icon-chevron_active"
   | "item-icon-circle_hidden"
   | "item-icon-image_square"
   | "item-icon-image_circle"
   | "item-children"
+  //DND
+  | "item-dragAvatar"
+  | "item-dragDestinationLine"
+  | "item-dragDestinationBulp"
   | "keyboard-label";
 
 type ElementId = string;

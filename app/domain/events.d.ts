@@ -10,7 +10,18 @@ type DomainEvent =
   | EventWithPayload<"item-close", string>
   | EventWithPayload<"item-startRename", string>
   | EventWithPayload<"item-insertAfter", { itemId: string; folder: Item }>
-  | EventWithPayload<"item-removed", string>
+  | EventWithPayload<"item-insertBefore", { itemId: string; folder: Item }>
+  | EventWithPayload<"item-insertInside", { itemId: string; folder: Item }>
+  | EventWithPayload<
+      "item-mouse-move-during-drag",
+      { itemUnder: Item; e: MouseEvent }
+    >
+  | SimpleEvent<"item-mouse-up-during-drag">
+  | EventWithPayload<"item-mouse-down", Item>
+  | EventWithPayload<
+      "item-removed",
+      { itemId: string; fireAnimation?: boolean }
+    >
   | EventWithPayload<"item-select", string>
   | EventWithPayload<"item-loaded", string>
   | EventWithPayload<"item-start-loading", string>;

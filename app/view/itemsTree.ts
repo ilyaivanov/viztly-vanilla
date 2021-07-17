@@ -9,14 +9,17 @@ export class ItemView {
   titleText: HTMLSpanElement;
   childrenContainer: HTMLElement | undefined;
   icon: ItemIcon;
-  constructor(private item: Item, private level = 0) {
+  constructor(public item: Item, public level: number) {
     const { title, id } = item;
-    this.icon = new ItemIcon(item);
+    this.icon = new ItemIcon(item, {
+      onMouseDown: (e) => store.onMouseDown(this.item),
+    });
     this.titleText = dom.span({ text: title });
     this.title = dom.div({
       children: [this.icon.el, this.titleText],
       classNames: ["item-row", levels.rowForLevel(level)],
       classMap: { "item-row-container": store.isContainer(item) },
+      onClick: () => store.select(item.id),
     });
     this.el = dom.div({ children: [this.title] });
 
@@ -58,13 +61,24 @@ export class ItemView {
     this.icon.close();
   };
 
-  remove = () =>
-    anim.flyAwayAndCollapse(this.el).addEventListener("finish", () => {
-      this.el.remove();
-    });
+  remove = (fireanimation?: boolean) => {
+    if (fireanimation)
+      anim.flyAwayAndCollapse(this.el).addEventListener("finish", () => {
+        this.el.remove();
+      });
+    else this.el.remove();
+  };
 
   insertAfter = (item: Item) =>
-    this.el.insertAdjacentElement("afterend", new ItemView(item).el);
+    dom.insert(this.el, "afterend", ItemView.view(item, this.level));
+
+  insertBefore = (item: Item) =>
+    dom.insert(this.el, "beforebegin", ItemView.view(item, this.level));
+
+  insertInside = (item: Item) => {
+    if (this.childrenContainer)
+      dom.insert(this.el, "afterbegin", ItemView.view(item, this.level + 1));
+  };
 
   renameInput?: HTMLInputElement;
   startRename = () => {
@@ -105,6 +119,14 @@ export class ItemView {
   };
 
   itemLoaded = () => this.crossFadeIntoLoaded();
+
+  startListeningToMouseOverEvents = () =>
+    this.title.addEventListener("mousemove", this.onMouseOver);
+
+  stopListeningToMouseOverEvents = () =>
+    this.title.removeEventListener("mousemove", this.onMouseOver);
+
+  onMouseOver = (e: MouseEvent) => store.onMouseOverDuringDrag(this.item, e);
 
   private crossFadeIntoLoaded = () => {
     if (store.isOpen(this.item.id)) {
@@ -153,16 +175,12 @@ export class ItemView {
         levels.childrenBorderForLevel(this.level),
       ],
     });
-  static view = (item: Item, level = 0): HTMLDivElement =>
+  static view = (item: Item, level: number): HTMLDivElement =>
     new ItemView(item, level).el;
 }
 
 export const viewTree = (id: string) =>
-  dom.fragment(store.mapChildren(id, (item) => ItemView.view(item)));
-
-style.class("item-row_selected", {
-  backgroundColor: "#37373D",
-});
+  dom.fragment(store.mapChildren(id, (item) => ItemView.view(item, 0)));
 
 style.class("item-row", {
   display: "flex",
@@ -171,6 +189,13 @@ style.class("item-row", {
   color: "#DDDDDD",
   paddingTop: spacings.rowVecticalPadding,
   paddingBottom: spacings.rowVecticalPadding,
+  onHover: {
+    backgroundColor: "rgb(42,45,46)",
+  },
+});
+
+style.class2("item-row", "item-row_selected", {
+  backgroundColor: "#37373D",
 });
 
 style.class("item-row-container", { fontWeight: "bold" });

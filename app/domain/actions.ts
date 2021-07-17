@@ -12,7 +12,6 @@ const onRightArrow: ActionHandler = (state) => {
   const isNeededToBeLoaded = items.isNeededToBeLoaded(state.items[selectedId]);
 
   const isLoading = items.isLoading(state.items, selectedId);
-  isNeededToBeLoaded; //?
   if (isNeededToBeLoaded) {
     return merge(open(state, selectedId), startLoading(state, selectedId));
   } else if (isOpen && !isEmpty)
@@ -51,6 +50,16 @@ const onUpArrow: ActionHandler = (state) => {
   if (nextItem && nextItem != selectedId)
     return changeSelectionOnFocusedArea(state, nextItem);
   else return noop(state);
+};
+
+const toggle = (state: AppState, id: string): ActionResult => {
+  if (items.isOpen(state.items, id)) {
+    return close(state, id);
+  } else {
+    if (items.isNeededToBeLoaded(state.items[id]))
+      return merge(open(state, id), startLoading(state, id));
+    else return open(state, id);
+  }
 };
 
 const focusOn = (state: AppState, area: FocusArea): ActionResult => {
@@ -225,7 +234,7 @@ const removeSelected = (state: AppState): ActionResult => {
     nextState: nextState,
     events: [
       { type: "item-select", payload: itemToFocus! },
-      { type: "item-removed", payload: itemId },
+      { type: "item-removed", payload: { itemId, fireAnimation: true } },
     ],
   };
 };
@@ -234,6 +243,40 @@ export const startRenameSelectedItem = (state: AppState): ActionResult => {
   return {
     nextState: state,
     events: [{ type: "item-startRename", payload: getItemSelected(state) }],
+  };
+};
+
+export const drop = (state: AppState, drop: DropDescription): ActionResult => {
+  const itemOver = state.items[drop.itemOver];
+  const context = items.getContext(state.items, drop.itemOver);
+  const index = context.indexOf(drop.itemOver);
+  context.splice(index, 1);
+  const newItems =
+    drop.placement == "after"
+      ? items.insertItemAfter(state.items, drop.itemUnder, itemOver)
+      : drop.placement == "before"
+      ? items.insertItemBefore(state.items, drop.itemUnder, itemOver)
+      : items.insertItemInside(state.items, drop.itemUnder, itemOver);
+
+  const payload = { itemId: drop.itemUnder, folder: itemOver };
+  const viewEvent: DomainEvent =
+    drop.placement == "after"
+      ? { type: "item-insertAfter", payload }
+      : drop.placement == "before"
+      ? { type: "item-insertBefore", payload }
+      : { type: "item-insertInside", payload };
+  return {
+    nextState: {
+      ...state,
+      items: newItems,
+    },
+    events: [
+      {
+        type: "item-removed",
+        payload: { itemId: drop.itemOver, fireAnimation: false },
+      },
+      viewEvent,
+    ],
   };
 };
 
@@ -287,4 +330,6 @@ export default {
   removeSelected,
   startRenameSelectedItem,
   createItemAfterSelected,
+  drop,
+  toggle,
 };

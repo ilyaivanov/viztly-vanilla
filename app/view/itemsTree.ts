@@ -14,7 +14,7 @@ export class ItemView {
     this.icon = new ItemIcon(item, {
       onMouseDown: (e) => store.onMouseDown(this.item),
     });
-    this.titleText = dom.span({ text: title });
+    this.titleText = dom.span({ className: "item-row-title", text: title });
     this.title = dom.div({
       children: [this.icon.el, this.titleText],
       classNames: ["item-row", levels.rowForLevel(level)],
@@ -196,6 +196,9 @@ style.class("item-row", {
 
 style.class2("item-row", "item-row_selected", {
   backgroundColor: "#37373D",
+});
+style.class("item-row-title", {
+  marginBottom: 2,
 });
 
 style.class("item-row-container", { fontWeight: "bold" });

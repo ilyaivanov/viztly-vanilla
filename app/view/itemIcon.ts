@@ -1,5 +1,6 @@
 import { css, dom, style, svg } from "../browser";
 import { icons, spacings, timings } from "../designSystem";
+
 import { store } from "../infra";
 
 const iconSize = spacings.outerRadius * 2;
@@ -20,12 +21,7 @@ export class ItemIcon {
       className: "item-icon-circle",
       classMap: this.openCircleMap(),
     });
-    this.innerCircle = svg.circle({
-      cx: iconSize / 2,
-      cy: iconSize / 2,
-      r: spacings.innerRadius,
-      fill: "white",
-    });
+    this.innerCircle = this.getInnerCircle();
     this.chevron = icons.chevron({
       className: "item-icon-chevron",
       classMap: {
@@ -52,14 +48,31 @@ export class ItemIcon {
         },
       });
     } else {
-      dom.appendChildren(itemIconContainer, [
-        this.innerCircle,
-        this.outerCircle,
-      ]);
+      dom.appendChildren(itemIconContainer, [this.innerCircle]);
+
+      if (!store.isEmpty(this.item))
+        dom.appendChildren(itemIconContainer, [this.outerCircle]);
     }
 
     this.el = dom.fragment([this.chevron, itemIconContainer]);
   }
+
+  getInnerCircle = () =>
+    store.isEmpty(this.item)
+      ? svg.circle({
+          cx: iconSize / 2,
+          cy: iconSize / 2,
+          r: spacings.innerRadius,
+          fill: "transparent",
+          strokeWidth: 2,
+          stroke: "white",
+        })
+      : svg.circle({
+          cx: iconSize / 2,
+          cy: iconSize / 2,
+          r: spacings.innerRadius,
+          fill: "white",
+        });
 
   open = () => {
     dom.assignClasses(this.outerCircle, { classMap: this.openCircleMap() });

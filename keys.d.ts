@@ -11,6 +11,7 @@ type ClassName =
   | "item-titleInput"
   | "item-done"
   | "item-row"
+  | "item-row-title"
   | "item-row-container"
   | "item-row_selected"
   | "item-children-border"

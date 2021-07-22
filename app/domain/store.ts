@@ -1,5 +1,7 @@
 import actions from "./actions";
 import * as items from "./items";
+import { saveUserSettings } from "../api/userState";
+import { sampleUserName } from "../api/config";
 
 export class Store {
   state: AppState;
@@ -96,6 +98,8 @@ export class Store {
   searchDone = (items: Item[]) =>
     this.performAction((state) => actions.searchResultsDone(state, items));
 
+  saveItems = () =>
+    saveUserSettings(this.createPersistedState(), sampleUserName);
   //DND
   onMouseDown = (item: Item) => {
     this.performAction(() => ({
@@ -132,6 +136,35 @@ export class Store {
     const { events, nextState } = action(this.state);
     this.state = nextState;
     this.dispatch(events);
+  };
+
+  private createPersistedState = (): PersistedState => {
+    const homeNodes: Items = {};
+    const traverse = (id: string) => {
+      const item = this.state.items[id];
+      homeNodes[id] = item;
+      if (items.isContainer(item) && item.children.length > 0) {
+        item.children.forEach(traverse);
+      }
+    };
+    traverse("HOME");
+
+    const savingCount = Object.keys(homeNodes).length;
+    const actualCount = Object.keys(this.state.items).length;
+    console.log(
+      `Saving ${savingCount} items (currently in state ${actualCount} items)`
+    );
+
+    //selected node might be removed, in that case point to a HOME
+    const currentSelectedId = "HOME";
+    // const persistedItemId = homeNodes[currentSelectedId]
+    // ? currentSelectedId
+    // : "HOME";
+    return {
+      focusedStack: [],
+      itemsSerialized: JSON.stringify(homeNodes),
+      selectedItemId: currentSelectedId,
+    };
   };
 }
 

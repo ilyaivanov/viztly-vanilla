@@ -1,5 +1,4 @@
 import { firebaseConfig } from "./config";
-
 declare const firebase: any;
 
 export const authorize = () =>
@@ -26,15 +25,6 @@ export const saveUserSettings = (
     .catch((e: any) => {
       console.error("Error while saving user settings");
     });
-
-export type PersistedState = {
-  selectedItemId: string;
-  focusedStack: string[];
-  itemsSerialized: string;
-  ui?: {
-    leftSidebarWidth: number;
-  };
-};
 
 export const loadUserSettings = (userId: string): Promise<PersistedState> =>
   firebase

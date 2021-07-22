@@ -143,6 +143,21 @@ export const input = (props: InputProps) => {
   return elem;
 };
 
+type ButtonProps = {
+  text?: string;
+} & ClassDefinitions &
+  Events;
+
+export const button = (props: ButtonProps) => {
+  const elem = document.createElement("button");
+  assignClasses(elem, props);
+  assignElementEvents(elem, props);
+
+  if (props.text) elem.textContent = props.text;
+
+  return elem;
+};
+
 const assignElementEvents = (elem: HTMLElement, props: Events) => {
   if (props.onKeyDown) elem.addEventListener("keydown", props.onKeyDown);
   if (props.onClick) elem.addEventListener("click", props.onClick);

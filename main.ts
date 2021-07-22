@@ -1,9 +1,5 @@
 import { sampleUserName } from "./app/api/config";
-import {
-  loadUserSettings,
-  PersistedState,
-  initFirebase,
-} from "./app/api/userState";
+import { loadUserSettings, initFirebase } from "./app/api/userState";
 import { store } from "./app/infra";
 import { renderApp } from "./app/view/app";
 

@@ -1,5 +1,5 @@
 import { dom, style } from "../browser";
-import { glue } from "../infra";
+import { glue, store } from "../infra";
 import * as youtubePlayer from "../api/youtubePlayer";
 
 export class Player {
@@ -13,6 +13,8 @@ export class Player {
         dom.div({
           id: youtubePlayer.youtubeIframe,
         }),
+
+        dom.button({ text: "save", onClick: store.saveItems }),
       ],
     });
   }

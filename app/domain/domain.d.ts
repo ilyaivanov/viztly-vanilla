@@ -28,3 +28,12 @@ type DropDescription = {
   itemOver: string;
   placement: DropPlacement;
 };
+
+type PersistedState = {
+  selectedItemId: string;
+  focusedStack: string[];
+  itemsSerialized: string;
+  ui?: {
+    leftSidebarWidth: number;
+  };
+};

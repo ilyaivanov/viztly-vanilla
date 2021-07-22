@@ -9,9 +9,10 @@ export class ItemIcon {
   el: Node;
 
   outerCircle: SVGElement;
-  innerCircle: SVGElement;
+  innerCircle?: SVGElement;
 
   chevron: SVGElement;
+  itemIconContainer: SVGSVGElement;
   constructor(private item: Item, props?: { onMouseDown: Action<MouseEvent> }) {
     this.outerCircle = svg.circle({
       cx: iconSize / 2,
@@ -21,21 +22,18 @@ export class ItemIcon {
       className: "item-icon-circle",
       classMap: this.openCircleMap(),
     });
-    this.innerCircle = this.getInnerCircle();
     this.chevron = icons.chevron({
       className: "item-icon-chevron",
-      classMap: {
-        "item-icon-chevron_open": store.isOpen(this.item.id),
-        "item-icon-chevron_active": this.canBeOpen(),
-      },
+      classMap: this.chevronMap(),
       onClick: () => store.toggle(item.id),
     });
 
-    const itemIconContainer = svg.svg({
+    this.itemIconContainer = svg.svg({
       className: "item-icon-svg",
       viewBox: `0 0 ${iconSize} ${iconSize}`,
       onMouseDown: props?.onMouseDown,
     });
+    const itemIconContainer = this.itemIconContainer;
 
     if (store.hasImage(item.id)) {
       const imageUrl = `url(${store.getPreviewImage(item.id)})`;
@@ -48,14 +46,26 @@ export class ItemIcon {
         },
       });
     } else {
-      dom.appendChildren(itemIconContainer, [this.innerCircle]);
+      this.innerCircle = this.getInnerCircle();
 
-      if (!store.isEmpty(this.item))
-        dom.appendChildren(itemIconContainer, [this.outerCircle]);
+      dom.appendChildren(itemIconContainer, [
+        this.innerCircle,
+        this.outerCircle,
+      ]);
     }
 
     this.el = dom.fragment([this.chevron, itemIconContainer]);
   }
+
+  chilrenCountChanged = () => {
+    dom.assignClassMap(this.chevron, this.chevronMap());
+    this.updateChevronVisibility();
+    dom.assignClassMap(this.outerCircle, this.openCircleMap());
+
+    this.innerCircle?.remove();
+    this.innerCircle = this.getInnerCircle();
+    dom.appendChildren(this.itemIconContainer, [this.innerCircle]);
+  };
 
   getInnerCircle = () =>
     store.isEmpty(this.item)
@@ -88,13 +98,23 @@ export class ItemIcon {
       dom.addClass(this.chevron, "item-icon-chevron_visible");
   };
 
+  unselect = () => dom.removeClass(this.chevron, "item-icon-chevron_visible");
+
   canBeOpen = () =>
     !store.isEmpty(this.item) || store.isNeededToBeLoaded(this.item);
 
-  unselect = () => dom.removeClass(this.chevron, "item-icon-chevron_visible");
-
-  openCircleMap = (): dom.ClassMap => ({
-    "item-icon-circle_hidden": store.isOpen(this.item.id),
+  private updateChevronVisibility = () => {
+    if (this.canBeOpen())
+      dom.addClass(this.chevron, "item-icon-chevron_visible");
+    else dom.removeClass(this.chevron, "item-icon-chevron_visible");
+  };
+  private openCircleMap = (): dom.ClassMap => ({
+    "item-icon-circle_hidden":
+      store.isOpen(this.item.id) || store.isEmpty(this.item),
+  });
+  private chevronMap = (): dom.ClassMap => ({
+    "item-icon-chevron_open": store.isOpen(this.item.id),
+    "item-icon-chevron_active": this.canBeOpen(),
   });
 }
 

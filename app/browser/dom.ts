@@ -38,14 +38,16 @@ export const assignClasses = <T extends Element>(
   classes: ClassDefinitions
 ): T => {
   const { classMap, className, classNames } = classes;
-  if (classMap)
-    Object.entries(classMap).map(([className, isSet]) =>
-      toggleClass(elem, className as ClassName, isSet)
-    );
+  if (classMap) assignClassMap(elem, classMap);
   if (className) elem.classList.add(className);
   if (classNames) classNames.forEach((cs) => elem.classList.add(cs));
   return elem;
 };
+
+export const assignClassMap = (elem: Element, classMap: ClassMap) =>
+  Object.entries(classMap).map(([className, isSet]) =>
+    toggleClass(elem, className as ClassName, isSet)
+  );
 
 export const addClass = (elem: Element, className: ClassName) =>
   elem.classList.add(className);

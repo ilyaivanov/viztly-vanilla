@@ -23,10 +23,12 @@ export class CommandsDispatcher {
       if (event.type == "item-close")
         this.itemViewAction(event.payload, (view) => view.close());
 
-      if (event.type == "item-removed")
+      if (event.type == "item-removed") {
+        this.childCountChanged(event.payload.itemParentId);
         this.itemViewAction(event.payload.itemId, (view) =>
           view.remove(event.payload.fireAnimation)
         );
+      }
 
       if (event.type == "item-startRename")
         this.itemViewAction(event.payload, (view) => view.startRename());
@@ -40,18 +42,25 @@ export class CommandsDispatcher {
       if (event.type == "item-mouse-up-during-drag") {
         this.allViewsAction((view) => view.stopListeningToMouseOverEvents());
       }
-      if (event.type == "item-insertAfter")
+      if (event.type == "item-insertAfter") {
+        this.childCountChanged(event.payload.folder.id);
         this.itemViewAction(event.payload.itemId, (view) =>
           view.insertAfter(event.payload.folder)
         );
-      if (event.type == "item-insertBefore")
+      }
+      if (event.type == "item-insertBefore") {
+        this.childCountChanged(event.payload.folder.id);
         this.itemViewAction(event.payload.itemId, (view) =>
           view.insertBefore(event.payload.folder)
         );
-      if (event.type == "item-insertInside")
+      }
+      if (event.type == "item-insertInside") {
+        this.childCountChanged(event.payload.folder.id);
+        this.childCountChanged(event.payload.itemId);
         this.itemViewAction(event.payload.itemId, (view) =>
           view.insertInside(event.payload.folder)
         );
+      }
       if (event.type == "item-loaded")
         this.itemViewAction(event.payload, (view) => view.itemLoaded());
       if (event.type == "item-play") this.playItem(event.payload);
@@ -86,6 +95,9 @@ export class CommandsDispatcher {
   };
 
   //commands
+  private childCountChanged = (itemId: string) => {
+    this.itemViewAction(itemId, (view) => view.childrenCountChanged());
+  };
   private itemSelected: string | undefined;
   private selectItem = (id: string) => {
     if (this.itemSelected) this.unselect(this.itemSelected);
@@ -103,8 +115,10 @@ export class CommandsDispatcher {
     else this.getView(id)?.unselect();
   };
 
-  private itemViewAction = (id: string, func: Action<ItemView>) =>
-    func(this.getView(id));
+  private itemViewAction = (id: string, func: Action<ItemView>) => {
+    const view = this.getView(id);
+    view && func(view);
+  };
 
   private allViewsAction = (func: Action<ItemView>) =>
     Object.values(this.itemViews).forEach(func);

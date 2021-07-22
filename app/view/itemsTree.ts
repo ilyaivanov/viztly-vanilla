@@ -77,7 +77,15 @@ export class ItemView {
 
   insertInside = (item: Item) => {
     if (this.childrenContainer)
-      dom.insert(this.el, "afterbegin", ItemView.view(item, this.level + 1));
+      dom.insert(
+        this.childrenContainer,
+        "afterbegin",
+        ItemView.view(item, this.level + 1)
+      );
+  };
+
+  childrenCountChanged = () => {
+    this.icon.chilrenCountChanged();
   };
 
   renameInput?: HTMLInputElement;

@@ -234,7 +234,10 @@ const removeSelected = (state: AppState): ActionResult => {
     nextState: nextState,
     events: [
       { type: "item-select", payload: itemToFocus! },
-      { type: "item-removed", payload: { itemId, fireAnimation: true } },
+      {
+        type: "item-removed",
+        payload: { itemId, itemParentId: parentId, fireAnimation: true },
+      },
     ],
   };
 };
@@ -252,6 +255,7 @@ export const playCurrentItem = (state: AppState): ActionResult => {
 
 export const drop = (state: AppState, drop: DropDescription): ActionResult => {
   const itemOver = state.items[drop.itemOver];
+  const itemParentId = items.getParentId(state.items, drop.itemOver);
   const context = items.getContext(state.items, drop.itemOver);
   const index = context.indexOf(drop.itemOver);
   context.splice(index, 1);
@@ -277,7 +281,7 @@ export const drop = (state: AppState, drop: DropDescription): ActionResult => {
     events: [
       {
         type: "item-removed",
-        payload: { itemId: drop.itemOver, fireAnimation: false },
+        payload: { itemId: drop.itemOver, itemParentId, fireAnimation: false },
       },
       viewEvent,
     ],

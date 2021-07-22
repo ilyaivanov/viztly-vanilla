@@ -21,7 +21,7 @@ type DomainEvent =
   | EventWithPayload<"item-mouse-down", Item>
   | EventWithPayload<
       "item-removed",
-      { itemId: string; fireAnimation?: boolean }
+      { itemId: string; itemParentId: string; fireAnimation?: boolean }
     >
   | EventWithPayload<"item-select", string>
   | EventWithPayload<"item-loaded", string>

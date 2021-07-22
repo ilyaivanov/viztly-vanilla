@@ -17,7 +17,7 @@ it("having two folder removing second one should place focus on first and remove
     { type: "item-select", payload: "first" },
     {
       type: "item-removed",
-      payload: { itemId: "second", fireAnimation: true },
+      payload: { itemId: "second", itemParentId: "HOME", fireAnimation: true },
     },
   ]);
 

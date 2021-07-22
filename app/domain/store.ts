@@ -85,11 +85,19 @@ export class Store {
 
   runDiagnostics = () => this.dispatch([{ type: "run-diagnostics" }]);
 
-  //TODO: make this work when selecting item in search while currently in main
-  select = (itemID: string) =>
+  select = (itemID: string) => {
+    const root = items.getRootFor(this.state.items, itemID);
+    if (root === "HOME") {
+      this.switchToMain();
+    } else if (root === "SEARCH") {
+      this.switchToSearch();
+    } else {
+      throw new Error("Unknown parent for " + this.state.items[itemID].title);
+    }
     this.performAction((state) =>
       actions.changeSelectionOnFocusedArea(state, itemID)
     );
+  };
   searchForVideos = (term: string) => {
     this.performAction(actions.searchForVideos);
     this.dispatch([{ type: "search-find-videos", payload: term }]);

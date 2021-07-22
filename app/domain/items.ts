@@ -149,7 +149,15 @@ export const getParentId = (items: Items, id: string): string => {
 
 const roots = new Set(["HOME", "SEARCH"]);
 export const isRoot = (id: string) => roots.has(id);
-
+export const getRootFor = (items: Items, itemId: string): string => {
+  let result = itemId;
+  let parent = getParentId(items, result);
+  while (parent) {
+    result = parent;
+    parent = getParentId(items, result);
+  }
+  return result;
+};
 //helpers
 
 export const getContext = (items: Items, id: string): string[] => {

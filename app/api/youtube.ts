@@ -1,11 +1,19 @@
-import { loadPlaylistItems as loadYoutubePlaylistItems } from "./fakeItemsLoader";
+// import * as api from "./fakeItemsLoader";
 import * as api from "./itemsLoader";
 import { mapReponseItem } from "./mapper";
 
-export const loadPlaylistItems = (): Promise<Item[]> => {
-  return loadYoutubePlaylistItems("some").then((response) =>
-    response.items.map(mapReponseItem)
-  );
+export const loadPlaylistItems = (
+  playlist: YoutubePlaylist
+): Promise<Item[]> => {
+  return api
+    .loadPlaylistItems(playlist.playlistId)
+    .then((response) => response.items.map(mapReponseItem));
+};
+
+export const loadChannelItems = (channel: YoutubeChannel): Promise<Item[]> => {
+  return api
+    .loadChannelItems(channel.channelId)
+    .then((response) => response.items.map(mapReponseItem));
 };
 
 export const findVideos = (term: string): Promise<Item[]> => {

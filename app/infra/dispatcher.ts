@@ -1,4 +1,8 @@
-import { findVideos, loadPlaylistItems } from "../api/youtube";
+import {
+  findVideos,
+  loadChannelItems,
+  loadPlaylistItems,
+} from "../api/youtube";
 import { Store } from "../domain/store";
 import Dnd from "../view/dnd";
 import { ItemView } from "../view/itemsTree";
@@ -65,9 +69,15 @@ export class CommandsDispatcher {
         this.itemViewAction(event.payload, (view) => view.itemLoaded());
       if (event.type == "item-play") this.playItem(event.payload);
       if (event.type == "item-start-loading") {
-        loadPlaylistItems().then((items) =>
-          this.store.itemsLoaded(event.payload, items)
-        );
+        const item = this.store.getItem(event.payload);
+        if (item.type === "YTplaylist")
+          loadPlaylistItems(item).then((items) =>
+            this.store.itemsLoaded(event.payload, items)
+          );
+        if (item.type === "YTchannel")
+          loadChannelItems(item).then((items) =>
+            this.store.itemsLoaded(event.payload, items)
+          );
       }
 
       if (event.type == "search-find-videos") {

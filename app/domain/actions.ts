@@ -294,6 +294,7 @@ export const createItemAfterSelected = (state: AppState): ActionResult => {
     children: [],
     title: "New Folder",
     type: "folder",
+    isOpen: true,
   };
   const selctedItemId = getItemSelected(state);
   const inserted: AppState = {
